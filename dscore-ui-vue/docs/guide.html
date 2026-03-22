@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dscore-ui-vue Guide</title>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--gray-800);
+      background: var(--gray-50);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 0;
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      color: white;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+
+    nav {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    nav h2 {
+      font-size: 1rem;
+      color: var(--gray-600);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    nav a {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: var(--gray-100);
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--gray-800);
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    nav a:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    section {
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      color: var(--gray-900);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin: 1.5rem 0 1rem;
+    }
+
+    h4 {
+      font-size: 1rem;
+      color: var(--gray-800);
+      margin: 1rem 0 0.5rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: var(--gray-600);
+    }
+
+    pre {
+      background: var(--gray-900);
+      color: #e5e7eb;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+      line-height: 1.7;
+    }
+
+    code {
+      font-family: 'Fira Code', 'Consolas', monospace;
+    }
+
+    :not(pre) > code {
+      background: var(--gray-100);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+      color: var(--gray-800);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    th {
+      background: var(--gray-50);
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    tr:hover td {
+      background: var(--gray-50);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-core { background: #dbeafe; color: #1d4ed8; }
+    .badge-form { background: #dcfce7; color: #166534; }
+    .badge-feedback { background: #fef3c7; color: #92400e; }
+
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .component-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 1rem;
+      transition: all 0.2s;
+    }
+
+    .component-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .component-card h4 {
+      margin: 0 0 0.5rem;
+      color: var(--gray-900);
+    }
+
+    .component-card p {
+      margin: 0;
+      font-size: 0.875rem;
+    }
+
+    .tip {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .tip strong {
+      color: var(--primary);
+    }
+
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid var(--warning);
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .warning strong {
+      color: var(--warning);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--gray-600);
+      font-size: 0.875rem;
+    }
+
+    .syntax-keyword { color: #c678dd; }
+    .syntax-string { color: #98c379; }
+    .syntax-comment { color: #5c6370; }
+    .syntax-tag { color: #e06c75; }
+    .syntax-attr { color: #d19a66; }
+    .syntax-func { color: #61afef; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>dscore-ui-vue</h1>
+    <p>Vue 3 UI Component Library - 18개 컴포넌트</p>
+  </header>
+
+  <div class="container">
+    <nav>
+      <h2>컴포넌트 목록</h2>
+      <ul>
+        <li><a href="#installation">설치</a></li>
+        <li><a href="#plugin">플러그인 설정</a></li>
+        <li><a href="#spinner">DsSpinner</a></li>
+        <li><a href="#button">DsButton</a></li>
+        <li><a href="#input">DsInput</a></li>
+        <li><a href="#modal">DsModal</a></li>
+        <li><a href="#textarea">DsTextarea</a></li>
+        <li><a href="#select">DsSelect</a></li>
+        <li><a href="#checkbox">DsCheckbox</a></li>
+        <li><a href="#radio">DsRadio</a></li>
+        <li><a href="#switch">DsSwitch</a></li>
+        <li><a href="#number-input">DsNumberInput</a></li>
+        <li><a href="#form">DsForm</a></li>
+        <li><a href="#toast">DsToast</a></li>
+        <li><a href="#confirm">DsConfirm</a></li>
+        <li><a href="#alert">DsAlert</a></li>
+        <li><a href="#progress">DsProgress</a></li>
+        <li><a href="#skeleton">DsSkeleton</a></li>
+        <li><a href="#css">CSS 커스터마이징</a></li>
+      </ul>
+    </nav>
+
+    <section>
+      <h2>컴포넌트 개요</h2>
+      <div class="component-grid">
+        <div class="component-card">
+          <h4>DsSpinner <span class="badge badge-core">Core</span></h4>
+          <p>로딩 인디케이터</p>
+        </div>
+        <div class="component-card">
+          <h4>DsButton <span class="badge badge-core">Core</span></h4>
+          <p>비동기 클릭 감지, 로딩, 성공 아이콘</p>
+        </div>
+        <div class="component-card">
+          <h4>DsInput <span class="badge badge-core">Core</span></h4>
+          <p>텍스트 입력 필드</p>
+        </div>
+        <div class="component-card">
+          <h4>DsModal <span class="badge badge-core">Core</span></h4>
+          <p>모달 다이얼로그</p>
+        </div>
+        <div class="component-card">
+          <h4>DsTextarea <span class="badge badge-form">Form</span></h4>
+          <p>텍스트 영역</p>
+        </div>
+        <div class="component-card">
+          <h4>DsSelect <span class="badge badge-form">Form</span></h4>
+          <p>드롭다운 선택</p>
+        </div>
+        <div class="component-card">
+          <h4>DsCheckbox <span class="badge badge-form">Form</span></h4>
+          <p>체크박스</p>
+        </div>
+        <div class="component-card">
+          <h4>DsRadio <span class="badge badge-form">Form</span></h4>
+          <p>라디오 버튼</p>
+        </div>
+        <div class="component-card">
+          <h4>DsSwitch <span class="badge badge-form">Form</span></h4>
+          <p>토글 스위치</p>
+        </div>
+        <div class="component-card">
+          <h4>DsNumberInput <span class="badge badge-form">Form</span></h4>
+          <p>숫자 입력</p>
+        </div>
+        <div class="component-card">
+          <h4>DsForm <span class="badge badge-form">Form</span></h4>
+          <p>폼 레이아웃</p>
+        </div>
+        <div class="component-card">
+          <h4>DsToast <span class="badge badge-feedback">Feedback</span></h4>
+          <p>토스트 알림</p>
+        </div>
+        <div class="component-card">
+          <h4>DsConfirm <span class="badge badge-feedback">Feedback</span></h4>
+          <p>확인 다이얼로그</p>
+        </div>
+        <div class="component-card">
+          <h4>DsAlert <span class="badge badge-feedback">Feedback</span></h4>
+          <p>인라인 알림</p>
+        </div>
+        <div class="component-card">
+          <h4>DsProgress <span class="badge badge-feedback">Feedback</span></h4>
+          <p>진행률 표시</p>
+        </div>
+        <div class="component-card">
+          <h4>DsSkeleton <span class="badge badge-feedback">Feedback</span></h4>
+          <p>로딩 플레이스홀더</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="installation">
+      <h2>설치</h2>
+      <pre><code>npm install dscore-ui-vue</code></pre>
+    </section>
+
+    <section id="plugin">
+      <h2>플러그인 설정</h2>
+      <pre><code><span class="syntax-comment">// main.ts</span>
+<span class="syntax-keyword">import</span> { createApp } <span class="syntax-keyword">from</span> <span class="syntax-string">'vue'</span>
+<span class="syntax-keyword">import</span> { DsCore } <span class="syntax-keyword">from</span> <span class="syntax-string">'dscore-ui-vue'</span>
+<span class="syntax-keyword">import</span> App <span class="syntax-keyword">from</span> <span class="syntax-string">'./App.vue'</span>
+
+<span class="syntax-keyword">const</span> app = <span class="syntax-func">createApp</span>(App)
+
+app.<span class="syntax-func">use</span>(DsCore, {
+  <span class="syntax-comment">// 전역 스피너 컴포넌트</span>
+  spinner: MyCustomSpinner,
+
+  <span class="syntax-comment">// 전역 아이콘</span>
+  icons: {
+    success: CheckIcon,
+    error: XIcon,
+    warning: AlertIcon,
+    info: InfoIcon,
+    close: CloseIcon,
+    arrow: ChevronDownIcon
+  },
+
+  <span class="syntax-comment">// 컴포넌트별 기본값</span>
+  defaults: {
+    button: {
+      throttle: <span class="syntax-attr">300</span>,
+      showSuccess: <span class="syntax-keyword">false</span>,
+      successDuration: <span class="syntax-attr">1500</span>
+    },
+    modal: {
+      closeOnEscape: <span class="syntax-keyword">true</span>,
+      closeOnOverlay: <span class="syntax-keyword">true</span>,
+      lockScroll: <span class="syntax-keyword">true</span>
+    },
+    toast: {
+      duration: <span class="syntax-attr">3000</span>,
+      position: <span class="syntax-string">'top-right'</span>
+    }
+  }
+})
+
+app.<span class="syntax-func">mount</span>(<span class="syntax-string">'#app'</span>)</code></pre>
+
+      <div class="tip">
+        <strong>스타일 우선순위:</strong> 컴포넌트 prop &gt; 전역 설정 (DsCore) &gt; 기본값
+      </div>
+    </section>
+
+    <section id="spinner">
+      <h2>DsSpinner <span class="badge badge-core">Core</span></h2>
+      <p>로딩 인디케이터 컴포넌트</p>
+
+      <h4>사용 예시</h4>
+      <pre><code><span class="syntax-tag">&lt;template&gt;</span>
+  <span class="syntax-tag">&lt;DsSpinner</span> <span class="syntax-attr">size</span>=<span class="syntax-string">"md"</span> <span class="syntax-tag">/&gt;</span>
+  <span class="syntax-tag">&lt;DsSpinner</span> <span class="syntax-attr">size</span>=<span class="syntax-string">"lg"</span> <span class="syntax-attr">class</span>=<span class="syntax-string">"text-blue-500"</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;/template&gt;</span></code></pre>
+
+      <h4>Props</h4>
+      <table>
+        <thead>
+          <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>size</td><td><code>'sm' | 'md' | 'lg'</code></td><td><code>'md'</code></td><td>스피너 크기</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="button">
+      <h2>DsButton <span class="badge badge-core">Core</span></h2>
+      <p>비동기 클릭 감지, 자동 로딩 상태, 성공 아이콘 지원</p>
+
+      <h4>사용 예시</h4>
+      <pre><code><span class="syntax-tag">&lt;template&gt;</span>
+  <span class="syntax-comment">&lt;!-- 기본 버튼 --&gt;</span>
+  <span class="syntax-tag">&lt;DsButton</span> <span class="syntax-attr">@click</span>=<span class="syntax-string">"handleClick"</span><span class="syntax-tag">&gt;</span>저장<span class="syntax-tag">&lt;/DsButton&gt;</span>
+
+  <span class="syntax-comment">&lt;!-- 비동기 클릭 (자동 로딩) --&gt;</span>
+  <span class="syntax-tag">&lt;DsButton</span> <span class="syntax-attr">@click</span>=<span class="syntax-string">"handleAsyncClick"</span><span class="syntax-tag">&gt;</span>저장<span class="syntax-tag">&lt;/DsButton&gt;</span>
+
+  <span class="syntax-comment">&lt;!-- 성공 아이콘 표시 --&gt;</span>
+  <span class="syntax-tag">&lt;DsButton</span> <span class="syntax-attr">:show-success</span>=<span class="syntax-string">"true"</span> <span class="syntax-attr">@click</span>=<span class="syntax-string">"handleAsyncClick"</span><span class="syntax-tag">&gt;</span>저장<span class="syntax-tag">&lt;/DsButton&gt;</span>
+
+  <span class="syntax-comment">&lt;!-- 쓰로틀 적용 --&gt;</span>
+  <span class="syntax-tag">&lt;DsButton</span> <span class="syntax-attr">:throttle</span>=<span class="syntax-string">"1000"</span> <span class="syntax-attr">@click</span>=<span class="syntax-string">"handleClick"</span><span class="syntax-tag">&gt;</span>저장<span class="syntax-tag">&lt;/DsButton&gt;</span>
+<span class="syntax-tag">&lt;/template&gt;</span>
+
+<span class="syntax-tag">&lt;script setup&gt;</span>
+<span class="syntax-keyword">const</span> handleAsyncClick = <span class="syntax-keyword">async</span> () =&gt; {
+  <span class="syntax-keyword">await</span> api.<span class="syntax-func">save</span>()  <span class="syntax-comment">// Promise 반환 시 자동으로 로딩 상태 관리</span>
+}
+<span class="syntax-tag">&lt;/script&gt;</span></code></pre>
+
+      <h4>Props</h4>
+      <table>
+        <thead>
+          <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>type</td><td><code>'button' | 'submit' | 'reset'</code></td><td><code>'button'</code></td><td>버튼 타입</td></tr>
+          <tr><td>disabled</td><td><code>boolean</code></td><td><code>false</code></td><td>비활성화</td></tr>
+          <tr><td>loading</td><td><code>boolean</code></td><td><code>false</code></td><td>로딩 상태 (수동)</td></tr>
+          <tr><td>throttle</td><td><code>number</code></td><td><code>0</code></td><td>클릭 쓰로틀 (ms)</td></tr>
+          <tr><td>showSuccess</td><td><code>boolean</code></td><td><code>false</code></td><td>비동기 완료 후 성공 아이콘 표시</td></tr>
+          <tr><td>successDuration</td><td><code>number</code></td><td><code>1500</code></td><td>성공 아이콘 표시 시간 (ms)</td></tr>
+          <tr><td>spinner</td><td><code>Component</code></td><td>-</td><td>커스텀 스피너</td></tr>
+          <tr><td>successIcon</td><td><code>Component</code></td><td>-</td><td>커스텀 성공 아이콘</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="input">
+      <h2>DsInput <span class="badge badge-core">Core</span></h2>
+      <p>텍스트 입력 필드</p>
+
+      <h4>사용 예시</h4>
+      <pre><code><span class="syntax-tag">&lt;template&gt;</span>
+  <span class="syntax-tag">&lt;DsInput</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"value"</span> <span class="syntax-attr">placeholder</span>=<span class="syntax-string">"이름 입력"</span> <span class="syntax-tag">/&gt;</span>
+  <span class="syntax-tag">&lt;DsInput</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"value"</span> <span class="syntax-attr">type</span>=<span class="syntax-string">"password"</span> <span class="syntax-tag">/&gt;</span>
+  <span class="syntax-tag">&lt;DsInput</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"value"</span> <span class="syntax-attr">:error</span>=<span class="syntax-string">"true"</span> <span class="syntax-attr">error-message</span>=<span class="syntax-string">"필수 입력입니다"</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;/template&gt;</span></code></pre>
+
+      <h4>Props</h4>
+      <table>
+        <thead>
+          <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>modelValue</td><td><code>string</code></td><td><code>''</code></td><td>v-model 값</td></tr>
+          <tr><td>type</td><td><code>string</code></td><td><code>'text'</code></td><td>input type</td></tr>
+          <tr><td>placeholder</td><td><code>string</code></td><td><code>''</code></td><td>placeholder</td></tr>
+          <tr><td>disabled</td><td><code>boolean</code></td><td><code>false</code></td><td>비활성화</td></tr>
+          <tr><td>readonly</td><td><code>boolean</code></td><td><code>false</code></td><td>읽기 전용</td></tr>
+          <tr><td>error</td><td><code>boolean</code></td><td><code>false</code></td><td>에러 상태</td></tr>
+          <tr><td>errorMessage</td><td><code>string</code></td><td><code>''</code></td><td>에러 메시지</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="modal">
+      <h2>DsModal <span class="badge badge-core">Core</span></h2>
+      <p>모달 다이얼로그 (ESC 닫기, 오버레이 클릭 닫기, 포커스 트랩 지원)</p>
+
+      <h4>사용 예시</h4>
+      <pre><code><span class="syntax-tag">&lt;template&gt;</span>
+  <span class="syntax-tag">&lt;DsModal</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"isOpen"</span> <span class="syntax-attr">title</span>=<span class="syntax-string">"확인"</span><span class="syntax-tag">&gt;</span>
+    <span class="syntax-tag">&lt;p&gt;</span>내용입니다<span class="syntax-tag">&lt;/p&gt;</span>
+
+    <span class="syntax-tag">&lt;template</span> <span class="syntax-attr">#footer</span><span class="syntax-tag">&gt;</span>
+      <span class="syntax-tag">&lt;DsButton</span> <span class="syntax-attr">@click</span>=<span class="syntax-string">"isOpen = false"</span><span class="syntax-tag">&gt;</span>취소<span class="syntax-tag">&lt;/DsButton&gt;</span>
+      <span class="syntax-tag">&lt;DsButton</span> <span class="syntax-attr">@click</span>=<span class="syntax-string">"handleConfirm"</span><span class="syntax-tag">&gt;</span>확인<span class="syntax-tag">&lt;/DsButton&gt;</span>
+    <span class="syntax-tag">&lt;/template&gt;</span>
+  <span class="syntax-tag">&lt;/DsModal&gt;</span>
+<span class="syntax-tag">&lt;/template&gt;</span></code></pre>
+
+      <h4>Props</h4>
+      <table>
+        <thead>
+          <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>modelValue</td><td><code>boolean</code></td><td><code>false</code></td><td>v-model (열림 상태)</td></tr>
+          <tr><td>title</td><td><code>string</code></td><td><code>''</code></td><td>모달 제목</td></tr>
+          <tr><td>closeOnEscape</td><td><code>boolean</code></td><td><code>true</code></td><td>ESC 키로 닫기</td></tr>
+          <tr><td>closeOnOverlay</td><td><code>boolean</code></td><td><code>true</code></td><td>오버레이 클릭으로 닫기</td></tr>
+          <tr><td>showClose</td><td><code>boolean</code></td><td><code>true</code></td><td>닫기 버튼 표시</td></tr>
+          <tr><td>lockScroll</td><td><code>boolean</code></td><td><code>true</code></td><td>바디 스크롤 잠금</td></tr>
+          <tr><td>confirmBeforeClose</td><td><code>boolean</code></td><td><code>false</code></td><td>닫기 전 확인</td></tr>
+          <tr><td>confirmMessage</td><td><code>string</code></td><td><code>'변경사항이 있습니다...'</code></td><td>확인 메시지</td></tr>
+        </tbody>
+      </table>
+
+      <h4>Slots</h4>
+      <table>
+        <thead>
+          <tr><th>Slot</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>default</td><td>모달 본문</td></tr>
+          <tr><td>header</td><td>헤더 커스텀</td></tr>
+          <tr><td>footer</td><td>푸터 커스텀</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="select">
+      <h2>DsSelect <span class="badge badge-form">Form</span></h2>
+      <p>드롭다운 선택 (검색, 초기화, 개별 옵션 스타일링 지원)</p>
+
+      <h4>사용 예시</h4>
+      <pre><code><span class="syntax-tag">&lt;template&gt;</span>
+  <span class="syntax-tag">&lt;DsSelect</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"selected"</span> <span class="syntax-attr">:options</span>=<span class="syntax-string">"options"</span> <span class="syntax-tag">/&gt;</span>
+  <span class="syntax-tag">&lt;DsSelect</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"selected"</span> <span class="syntax-attr">:options</span>=<span class="syntax-string">"options"</span> <span class="syntax-attr">:searchable</span>=<span class="syntax-string">"true"</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;/template&gt;</span>
+
+<span class="syntax-tag">&lt;script setup&gt;</span>
+<span class="syntax-keyword">const</span> options = [
+  { value: <span class="syntax-string">'apple'</span>, label: <span class="syntax-string">'사과'</span> },
+  { value: <span class="syntax-string">'banana'</span>, label: <span class="syntax-string">'바나나'</span>, description: <span class="syntax-string">'열대 과일'</span> },
+  { value: <span class="syntax-string">'orange'</span>, label: <span class="syntax-string">'오렌지'</span>, disabled: <span class="syntax-keyword">true</span> }
+]
+<span class="syntax-tag">&lt;/script&gt;</span>
+
+<span class="syntax-tag">&lt;style&gt;</span>
+<span class="syntax-comment">/* 개별 옵션 스타일링 */</span>
+.ds-select-option-apple { color: red; }
+.ds-select-option-banana { color: goldenrod; }
+.ds-select-option-orange { color: orange; }
+<span class="syntax-tag">&lt;/style&gt;</span></code></pre>
+
+      <div class="tip">
+        <strong>개별 옵션 스타일링:</strong> 각 옵션은 <code>.ds-select-option-{value}</code> 클래스가 자동으로 부여됩니다. 이를 통해 옵션별 스타일을 자유롭게 지정할 수 있습니다.
+      </div>
+    </section>
+
+    <section id="checkbox">
+      <h2>DsCheckbox <span class="badge badge-form">Form</span></h2>
+      <p>체크박스 (불확정 상태 지원)</p>
+
+      <pre><code><span class="syntax-tag">&lt;DsCheckbox</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"checked"</span><span class="syntax-tag">&gt;</span>약관에 동의합니다<span class="syntax-tag">&lt;/DsCheckbox&gt;</span>
+<span class="syntax-tag">&lt;DsCheckbox</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"checked"</span> <span class="syntax-attr">:indeterminate</span>=<span class="syntax-string">"isIndeterminate"</span><span class="syntax-tag">&gt;</span>전체 선택<span class="syntax-tag">&lt;/DsCheckbox&gt;</span></code></pre>
+    </section>
+
+    <section id="radio">
+      <h2>DsRadio / DsRadioGroup <span class="badge badge-form">Form</span></h2>
+      <p>라디오 버튼 (개별 / 그룹)</p>
+
+      <pre><code><span class="syntax-tag">&lt;template&gt;</span>
+  <span class="syntax-comment">&lt;!-- 개별 사용 --&gt;</span>
+  <span class="syntax-tag">&lt;DsRadio</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"selected"</span> <span class="syntax-attr">value</span>=<span class="syntax-string">"a"</span><span class="syntax-tag">&gt;</span>옵션 A<span class="syntax-tag">&lt;/DsRadio&gt;</span>
+  <span class="syntax-tag">&lt;DsRadio</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"selected"</span> <span class="syntax-attr">value</span>=<span class="syntax-string">"b"</span><span class="syntax-tag">&gt;</span>옵션 B<span class="syntax-tag">&lt;/DsRadio&gt;</span>
+
+  <span class="syntax-comment">&lt;!-- 그룹 사용 --&gt;</span>
+  <span class="syntax-tag">&lt;DsRadioGroup</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"selected"</span> <span class="syntax-attr">:options</span>=<span class="syntax-string">"options"</span> <span class="syntax-tag">/&gt;</span>
+
+  <span class="syntax-comment">&lt;!-- 가로 배치 --&gt;</span>
+  <span class="syntax-tag">&lt;DsRadioGroup</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"selected"</span> <span class="syntax-attr">:options</span>=<span class="syntax-string">"options"</span> <span class="syntax-attr">direction</span>=<span class="syntax-string">"horizontal"</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;/template&gt;</span></code></pre>
+    </section>
+
+    <section id="switch">
+      <h2>DsSwitch <span class="badge badge-form">Form</span></h2>
+      <p>토글 스위치</p>
+
+      <pre><code><span class="syntax-tag">&lt;DsSwitch</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"enabled"</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;DsSwitch</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"enabled"</span><span class="syntax-tag">&gt;</span>알림 받기<span class="syntax-tag">&lt;/DsSwitch&gt;</span></code></pre>
+    </section>
+
+    <section id="number-input">
+      <h2>DsNumberInput <span class="badge badge-form">Form</span></h2>
+      <p>숫자 입력 (min/max, step, precision 지원)</p>
+
+      <pre><code><span class="syntax-tag">&lt;DsNumberInput</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"quantity"</span> <span class="syntax-attr">:min</span>=<span class="syntax-string">"1"</span> <span class="syntax-attr">:max</span>=<span class="syntax-string">"100"</span> <span class="syntax-attr">:step</span>=<span class="syntax-string">"1"</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;DsNumberInput</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"price"</span> <span class="syntax-attr">:precision</span>=<span class="syntax-string">"2"</span> <span class="syntax-tag">/&gt;</span></code></pre>
+    </section>
+
+    <section id="form">
+      <h2>DsFormItem / DsForm <span class="badge badge-form">Form</span></h2>
+      <p>폼 레이아웃 (라벨, 필수 표시, 에러 메시지)</p>
+
+      <pre><code><span class="syntax-tag">&lt;template&gt;</span>
+  <span class="syntax-tag">&lt;DsForm</span> <span class="syntax-attr">@submit</span>=<span class="syntax-string">"handleSubmit"</span><span class="syntax-tag">&gt;</span>
+    <span class="syntax-tag">&lt;DsFormItem</span> <span class="syntax-attr">label</span>=<span class="syntax-string">"이름"</span> <span class="syntax-attr">:required</span>=<span class="syntax-string">"true"</span> <span class="syntax-attr">:error</span>=<span class="syntax-string">"errors.name"</span><span class="syntax-tag">&gt;</span>
+      <span class="syntax-tag">&lt;DsInput</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"form.name"</span> <span class="syntax-tag">/&gt;</span>
+    <span class="syntax-tag">&lt;/DsFormItem&gt;</span>
+
+    <span class="syntax-tag">&lt;DsFormItem</span> <span class="syntax-attr">label</span>=<span class="syntax-string">"이메일"</span> <span class="syntax-attr">:error</span>=<span class="syntax-string">"errors.email"</span><span class="syntax-tag">&gt;</span>
+      <span class="syntax-tag">&lt;DsInput</span> <span class="syntax-attr">v-model</span>=<span class="syntax-string">"form.email"</span> <span class="syntax-attr">type</span>=<span class="syntax-string">"email"</span> <span class="syntax-tag">/&gt;</span>
+    <span class="syntax-tag">&lt;/DsFormItem&gt;</span>
+
+    <span class="syntax-tag">&lt;DsButton</span> <span class="syntax-attr">type</span>=<span class="syntax-string">"submit"</span><span class="syntax-tag">&gt;</span>제출<span class="syntax-tag">&lt;/DsButton&gt;</span>
+  <span class="syntax-tag">&lt;/DsForm&gt;</span>
+<span class="syntax-tag">&lt;/template&gt;</span></code></pre>
+    </section>
+
+    <section id="toast">
+      <h2>DsToast <span class="badge badge-feedback">Feedback</span></h2>
+      <p>토스트 알림 (Composable)</p>
+
+      <pre><code><span class="syntax-tag">&lt;script setup&gt;</span>
+<span class="syntax-keyword">import</span> { useToast } <span class="syntax-keyword">from</span> <span class="syntax-string">'dscore-ui-vue'</span>
+
+<span class="syntax-keyword">const</span> toast = <span class="syntax-func">useToast</span>()
+
+<span class="syntax-keyword">const</span> handleSave = <span class="syntax-keyword">async</span> () =&gt; {
+  <span class="syntax-keyword">try</span> {
+    <span class="syntax-keyword">await</span> api.<span class="syntax-func">save</span>()
+    toast.<span class="syntax-func">success</span>(<span class="syntax-string">'저장되었습니다'</span>)
+  } <span class="syntax-keyword">catch</span> (e) {
+    toast.<span class="syntax-func">error</span>(<span class="syntax-string">'저장에 실패했습니다'</span>)
+  }
+}
+
+<span class="syntax-comment">// 다양한 타입</span>
+toast.<span class="syntax-func">success</span>(<span class="syntax-string">'성공!'</span>)
+toast.<span class="syntax-func">error</span>(<span class="syntax-string">'에러!'</span>)
+toast.<span class="syntax-func">warning</span>(<span class="syntax-string">'경고!'</span>)
+toast.<span class="syntax-func">info</span>(<span class="syntax-string">'정보'</span>)
+<span class="syntax-tag">&lt;/script&gt;</span></code></pre>
+    </section>
+
+    <section id="confirm">
+      <h2>DsConfirm <span class="badge badge-feedback">Feedback</span></h2>
+      <p>확인 다이얼로그 (Composable)</p>
+
+      <pre><code><span class="syntax-tag">&lt;script setup&gt;</span>
+<span class="syntax-keyword">import</span> { useConfirm } <span class="syntax-keyword">from</span> <span class="syntax-string">'dscore-ui-vue'</span>
+
+<span class="syntax-keyword">const</span> confirm = <span class="syntax-func">useConfirm</span>()
+
+<span class="syntax-keyword">const</span> handleDelete = <span class="syntax-keyword">async</span> () =&gt; {
+  <span class="syntax-keyword">const</span> result = <span class="syntax-keyword">await</span> <span class="syntax-func">confirm</span>({
+    title: <span class="syntax-string">'삭제 확인'</span>,
+    message: <span class="syntax-string">'정말 삭제하시겠습니까?'</span>,
+    confirmText: <span class="syntax-string">'삭제'</span>,
+    cancelText: <span class="syntax-string">'취소'</span>,
+    type: <span class="syntax-string">'danger'</span>
+  })
+
+  <span class="syntax-keyword">if</span> (result) {
+    <span class="syntax-keyword">await</span> api.<span class="syntax-func">delete</span>(id)
+  }
+}
+<span class="syntax-tag">&lt;/script&gt;</span></code></pre>
+    </section>
+
+    <section id="alert">
+      <h2>DsAlert <span class="badge badge-feedback">Feedback</span></h2>
+      <p>인라인 알림</p>
+
+      <pre><code><span class="syntax-tag">&lt;DsAlert</span> <span class="syntax-attr">type</span>=<span class="syntax-string">"success"</span><span class="syntax-tag">&gt;</span>저장되었습니다<span class="syntax-tag">&lt;/DsAlert&gt;</span>
+<span class="syntax-tag">&lt;DsAlert</span> <span class="syntax-attr">type</span>=<span class="syntax-string">"error"</span> <span class="syntax-attr">:closable</span>=<span class="syntax-string">"true"</span> <span class="syntax-attr">@close</span>=<span class="syntax-string">"handleClose"</span><span class="syntax-tag">&gt;</span>에러 발생<span class="syntax-tag">&lt;/DsAlert&gt;</span>
+<span class="syntax-tag">&lt;DsAlert</span> <span class="syntax-attr">type</span>=<span class="syntax-string">"warning"</span><span class="syntax-tag">&gt;</span>경고 메시지<span class="syntax-tag">&lt;/DsAlert&gt;</span>
+<span class="syntax-tag">&lt;DsAlert</span> <span class="syntax-attr">type</span>=<span class="syntax-string">"info"</span><span class="syntax-tag">&gt;</span>안내 메시지<span class="syntax-tag">&lt;/DsAlert&gt;</span></code></pre>
+    </section>
+
+    <section id="progress">
+      <h2>DsProgress <span class="badge badge-feedback">Feedback</span></h2>
+      <p>진행률 표시</p>
+
+      <pre><code><span class="syntax-tag">&lt;DsProgress</span> <span class="syntax-attr">:value</span>=<span class="syntax-string">"50"</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;DsProgress</span> <span class="syntax-attr">:value</span>=<span class="syntax-string">"75"</span> <span class="syntax-attr">:show-text</span>=<span class="syntax-string">"true"</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;DsProgress</span> <span class="syntax-attr">:value</span>=<span class="syntax-string">"100"</span> <span class="syntax-attr">status</span>=<span class="syntax-string">"success"</span> <span class="syntax-tag">/&gt;</span></code></pre>
+    </section>
+
+    <section id="skeleton">
+      <h2>DsSkeleton <span class="badge badge-feedback">Feedback</span></h2>
+      <p>로딩 플레이스홀더</p>
+
+      <pre><code><span class="syntax-tag">&lt;DsSkeleton</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;DsSkeleton</span> <span class="syntax-attr">type</span>=<span class="syntax-string">"circle"</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;DsSkeleton</span> <span class="syntax-attr">type</span>=<span class="syntax-string">"rect"</span> <span class="syntax-attr">:width</span>=<span class="syntax-string">"200"</span> <span class="syntax-attr">:height</span>=<span class="syntax-string">"150"</span> <span class="syntax-tag">/&gt;</span>
+<span class="syntax-tag">&lt;DsSkeleton</span> <span class="syntax-attr">:rows</span>=<span class="syntax-string">"3"</span> <span class="syntax-tag">/&gt;</span></code></pre>
+    </section>
+
+    <section id="css">
+      <h2>CSS 커스터마이징</h2>
+      <p>모든 컴포넌트는 고정된 CSS 클래스를 제공합니다. 원하는 스타일을 자유롭게 적용할 수 있습니다.</p>
+
+      <pre><code><span class="syntax-comment">/* 버튼 커스터마이징 */</span>
+.ds-button {
+  background: var(--primary-color);
+  border-radius: 8px;
+}
+
+.ds-button--loading {
+  opacity: 0.7;
+}
+
+<span class="syntax-comment">/* 입력 필드 커스터마이징 */</span>
+.ds-input {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.ds-input--error {
+  border-color: #ef4444;
+}
+
+<span class="syntax-comment">/* 모달 커스터마이징 */</span>
+.ds-modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.ds-modal-content {
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+<span class="syntax-comment">/* 셀렉트 옵션별 스타일링 */</span>
+.ds-select-option-premium {
+  background: linear-gradient(to right, gold, orange);
+}</code></pre>
+
+      <div class="warning">
+        <strong>참고:</strong> 컴포넌트는 최소한의 기본 스타일만 제공합니다. 프로젝트에 맞는 디자인 시스템을 적용하세요.
+      </div>
+    </section>
+
+    <section>
+      <h2>TypeScript 지원</h2>
+      <p>모든 Props 타입이 export됩니다.</p>
+
+      <pre><code><span class="syntax-keyword">import</span> <span class="syntax-keyword">type</span> {
+  DsCoreOptions,
+  DsButtonProps,
+  DsInputProps,
+  DsModalProps,
+  DsSelectProps,
+  <span class="syntax-comment">// ...</span>
+} <span class="syntax-keyword">from</span> <span class="syntax-string">'dscore-ui-vue'</span></code></pre>
+    </section>
+  </div>
+
+  <footer>
+    <p>dscore-ui-vue &copy; 2026</p>
+  </footer>
+</body>
+</html>
