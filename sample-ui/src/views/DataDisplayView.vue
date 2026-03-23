@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   DsTable,
   DsPagination,
@@ -10,16 +10,31 @@ import {
   DsDescription,
   DsStatCard,
   DsButton,
+  DsSpinner,
 } from 'dscore-ui-vue'
 
 // --- Table ---
-const tableData = ref([
+const rawTableData = [
   { id: 1, name: '김철수', email: 'kim@example.com', status: 'active', date: '2026-03-20' },
   { id: 2, name: '이영희', email: 'lee@example.com', status: 'pending', date: '2026-03-19' },
   { id: 3, name: '박민수', email: 'park@example.com', status: 'inactive', date: '2026-03-18' },
   { id: 4, name: '정수진', email: 'jung@example.com', status: 'active', date: '2026-03-17' },
   { id: 5, name: '최동욱', email: 'choi@example.com', status: 'rejected', date: '2026-03-16' },
-])
+  { id: 6, name: '한지민', email: 'han@example.com', status: 'active', date: '2026-03-15' },
+  { id: 7, name: '오승환', email: 'oh@example.com', status: 'pending', date: '2026-03-14' },
+  { id: 8, name: '서유진', email: 'seo@example.com', status: 'active', date: '2026-03-13' },
+]
+
+const tableData = ref<typeof rawTableData>([])
+const tableLoading = ref(true)
+
+onMounted(() => {
+  // 5초 후 데이터 로딩 시뮬레이션
+  setTimeout(() => {
+    tableData.value = rawTableData
+    tableLoading.value = false
+  }, 5000)
+})
 
 const tableColumns = [
   { key: 'id', label: 'ID', width: '60px', sortable: true },
@@ -31,6 +46,29 @@ const tableColumns = [
 ]
 
 const selectedRows = ref<number[]>([])
+const sortKey = ref('')
+const sortOrder = ref<'asc' | 'desc' | ''>('')
+
+// 클라이언트 사이드 정렬
+const sortedTableData = computed(() => {
+  if (!sortKey.value || !sortOrder.value) return tableData.value
+  const key = sortKey.value
+  const order = sortOrder.value
+  return [...tableData.value].sort((a: any, b: any) => {
+    const valA = a[key]
+    const valB = b[key]
+    if (valA == null) return 1
+    if (valB == null) return -1
+    if (typeof valA === 'number' && typeof valB === 'number') {
+      return order === 'asc' ? valA - valB : valB - valA
+    }
+    const strA = String(valA).toLowerCase()
+    const strB = String(valB).toLowerCase()
+    if (strA < strB) return order === 'asc' ? -1 : 1
+    if (strA > strB) return order === 'asc' ? 1 : -1
+    return 0
+  })
+})
 
 const statusLabelMap: Record<string, string> = {
   active: '활성',
@@ -39,6 +77,9 @@ const statusLabelMap: Record<string, string> = {
   rejected: '반려',
   completed: '완료',
 }
+
+// --- 코드 예시 토글 ---
+const showTableCode = ref(false)
 
 // --- Pagination ---
 const currentPage = ref(1)
@@ -84,21 +125,30 @@ const descItems3col = [
     <!-- DsTable -->
     <section class="demo-section">
       <h2 class="demo-section__title">DsTable</h2>
-      <p class="demo-section__subtitle">선택 가능하고 정렬 가능한 데이터 테이블입니다.</p>
+      <p class="demo-section__subtitle">선택 가능하고 정렬 가능한 데이터 테이블입니다. 페이지 진입 후 5초간 로딩 상태를 시뮬레이션합니다.</p>
       <DsTable
-        :data="tableData"
+        :data="sortedTableData"
         :columns="tableColumns"
         selectable
         sortable
+        :loading="tableLoading"
         v-model:selected="selectedRows"
+        v-model:sort-key="sortKey"
+        v-model:sort-order="sortOrder"
       >
+        <template #loading>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 2rem 0;">
+            <DsSpinner size="2rem" />
+            <span style="font-size: 0.875rem; color: #5a6970;">데이터를 불러오는 중...</span>
+          </div>
+        </template>
         <template #cell-status="{ row }">
-          <DsStatusTag :status="row.status">
+          <DsStatusTag v-if="row" :status="row.status">
             {{ statusLabelMap[row.status] ?? row.status }}
           </DsStatusTag>
         </template>
         <template #cell-actions="{ row }">
-          <div style="display: flex; gap: 0.5rem;">
+          <div v-if="row" style="display: flex; gap: 0.5rem;">
             <DsButton style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">편집</DsButton>
             <DsButton style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">삭제</DsButton>
           </div>
@@ -106,7 +156,74 @@ const descItems3col = [
       </DsTable>
       <p style="font-size: 0.875rem; color: #5a6970; margin-top: 0.5rem;">
         선택된 행 ID: {{ selectedRows.length > 0 ? selectedRows.join(', ') : '없음' }}
+        <span v-if="sortKey"> · 정렬: {{ sortKey }} ({{ sortOrder }})</span>
       </p>
+
+      <!-- 코드 예시 -->
+      <button class="demo-code-toggle" @click="showTableCode = !showTableCode">
+        {{ showTableCode ? '코드 숨기기' : '코드 보기' }}
+      </button>
+      <div v-show="showTableCode" class="demo-code">
+        <pre><code>&lt;script setup lang="ts"&gt;
+import { ref, computed, onMounted } from 'vue'
+import { DsTable, DsSpinner, DsStatusTag, DsButton } from 'dscore-ui-vue'
+
+const tableData = ref([])
+const tableLoading = ref(true)
+const sortKey = ref('')
+const sortOrder = ref('')
+
+onMounted(() =&gt; {
+  // API 호출 시뮬레이션
+  setTimeout(() =&gt; {
+    tableData.value = [...] // 서버에서 받은 데이터
+    tableLoading.value = false
+  }, 5000)
+})
+
+const columns = [
+  { key: 'id', label: 'ID', width: '60px', sortable: true },
+  { key: 'name', label: '이름', sortable: true },
+  { key: 'email', label: '이메일', sortable: true },
+  { key: 'status', label: '상태' },
+  { key: 'date', label: '가입일', sortable: true },
+]
+
+// 클라이언트 사이드 정렬
+const sortedData = computed(() =&gt; {
+  if (!sortKey.value || !sortOrder.value) return tableData.value
+  return [...tableData.value].sort((a, b) =&gt; {
+    const valA = a[sortKey.value]
+    const valB = b[sortKey.value]
+    if (valA &lt; valB) return sortOrder.value === 'asc' ? -1 : 1
+    if (valA &gt; valB) return sortOrder.value === 'asc' ? 1 : -1
+    return 0
+  })
+})
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;DsTable
+    :data="sortedData"
+    :columns="columns"
+    selectable
+    sortable
+    :loading="tableLoading"
+    v-model:sort-key="sortKey"
+    v-model:sort-order="sortOrder"
+  &gt;
+    &lt;template #loading&gt;
+      &lt;div style="text-align: center; padding: 2rem;"&gt;
+        &lt;DsSpinner size="2rem" /&gt;
+        &lt;p&gt;데이터를 불러오는 중...&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/template&gt;
+    &lt;template #cell-status="{ row }"&gt;
+      &lt;DsStatusTag :status="row.status"&gt;{{ row.status }}&lt;/DsStatusTag&gt;
+    &lt;/template&gt;
+  &lt;/DsTable&gt;
+&lt;/template&gt;</code></pre>
+      </div>
     </section>
 
     <!-- DsPagination -->
@@ -291,5 +408,40 @@ const descItems3col = [
 .demo-grid {
   display: grid;
   gap: 1rem;
+}
+
+.demo-code-toggle {
+  margin-top: 1rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  color: #5a6970;
+  background: #f0f4f7;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.demo-code-toggle:hover {
+  background: #e4eaef;
+}
+
+.demo-code {
+  margin-top: 0.75rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+.demo-code pre {
+  margin: 0;
+  padding: 1rem;
+  background: #1e1e2e;
+  overflow-x: auto;
+}
+.demo-code code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #cdd6f4;
+  white-space: pre;
 }
 </style>

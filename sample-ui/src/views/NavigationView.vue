@@ -9,15 +9,40 @@ import {
   DsSteps,
   DsTimeline,
   DsButton,
+  DsInput,
+  DsSelect,
+  DsCheckbox,
+  DsTable,
+  DsStatusTag,
 } from 'dscore-ui-vue'
 
-// --- DsTabs ---
-const activeTab = ref('overview')
+// --- DsTabs (데이터 유지 데모) ---
+const activeTab = ref('form')
 const tabs = [
-  { key: 'overview', label: '개요' },
-  { key: 'details', label: '상세 정보' },
-  { key: 'history', label: '변경 이력' },
+  { key: 'form', label: '입력 폼' },
+  { key: 'table', label: '데이터 목록' },
+  { key: 'settings', label: '설정' },
 ]
+
+// 탭 간 유지되는 데이터
+const formName = ref('')
+const formEmail = ref('')
+const formDept = ref('')
+const tabTableData = [
+  { id: 1, name: '김철수', dept: '개발팀', status: 'active' },
+  { id: 2, name: '이영희', dept: '디자인팀', status: 'pending' },
+  { id: 3, name: '박민수', dept: '기획팀', status: 'inactive' },
+]
+const tabTableColumns = [
+  { key: 'id', label: 'ID', width: '60px' },
+  { key: 'name', label: '이름' },
+  { key: 'dept', label: '부서' },
+  { key: 'status', label: '상태' },
+]
+const settingNotify = ref(true)
+const settingTheme = ref('light')
+
+const showTabsCode = ref(false)
 
 // --- DsMenuTab ---
 const activeMenuTab = ref('tab-1')
@@ -87,24 +112,60 @@ const timelineItems = [
     type: 'success',
   },
   {
-    title: '배송 시작',
+    title: '배송 준비',
     description: '물류 센터에서 발송 준비 중입니다.',
     time: '2026-03-21 14:30',
-    type: 'success',
+    type: 'warning',
   },
   {
     title: '배송 중',
     description: '택배사에서 배송 중입니다. (운송장: 1234-5678)',
     time: '2026-03-22 10:15',
-    type: '',
+    type: 'info',
   },
   {
     title: '배송 완료',
-    description: '상품이 정상적으로 배달되었습니다.',
-    time: '2026-03-23 14:00',
+    description: '배송 예정일: 2026-03-24',
+    time: '',
     type: '',
   },
 ]
+
+const timelineItems2 = [
+  {
+    title: '서버 점검 시작',
+    description: 'v2.5.0 배포를 위한 서버 점검이 시작되었습니다.',
+    time: '2026-03-22 02:00',
+    type: 'info',
+  },
+  {
+    title: 'DB 마이그레이션 실패',
+    description: 'users 테이블 스키마 변경 중 오류가 발생했습니다. 롤백 진행.',
+    time: '2026-03-22 02:15',
+    type: 'error',
+  },
+  {
+    title: '롤백 완료',
+    description: '이전 버전으로 정상 복구되었습니다.',
+    time: '2026-03-22 02:30',
+    type: 'warning',
+  },
+  {
+    title: '재배포 진행 중',
+    description: '수정된 마이그레이션 스크립트로 재배포 중입니다.',
+    time: '2026-03-22 03:00',
+    type: 'info',
+  },
+  {
+    title: '배포 완료',
+    description: 'v2.5.0 배포가 정상적으로 완료되었습니다.',
+    time: '2026-03-22 03:20',
+    type: 'success',
+  },
+]
+
+const showTimelineCode = ref(false)
+const showCollapseCode = ref(false)
 </script>
 
 <template>
@@ -121,36 +182,102 @@ const timelineItems = [
     <!-- DsTabs -->
     <section class="demo-section">
       <h2 class="demo-section__title">DsTabs</h2>
-      <p class="demo-section__subtitle">콘텐츠를 탭으로 구분하여 표시합니다.</p>
+      <p class="demo-section__subtitle">탭을 전환해도 각 탭의 입력 데이터가 유지됩니다. 폼에 값을 입력하고 다른 탭으로 이동한 뒤 돌아와 보세요.</p>
       <DsTabs v-model="activeTab" :tabs="tabs">
-        <template #panel-overview>
-          <div class="demo-column" style="gap: 0.5rem;">
-            <p style="font-size: 0.875rem; color: #2a3439; font-weight: 500;">개요 탭 콘텐츠</p>
-            <p style="font-size: 0.875rem; color: #5a6970;">
-              이 섹션에서는 프로젝트의 전체적인 개요와 현황을 확인할 수 있습니다.
-              주요 지표와 최근 활동 내역을 한눈에 파악할 수 있습니다.
+        <template #panel-form>
+          <div class="demo-column" style="gap: 1rem; padding: 1rem 0;">
+            <p style="font-size: 0.875rem; color: #2a3439; font-weight: 500;">사용자 정보 입력</p>
+            <div class="demo-row" style="gap: 1rem; flex-wrap: wrap; align-items: flex-start;">
+              <div class="demo-column" style="gap: 0.25rem; flex: 1; min-width: 200px;">
+                <label style="font-size: 0.75rem; color: #5a6970;">이름</label>
+                <DsInput v-model="formName" placeholder="이름을 입력하세요" />
+              </div>
+              <div class="demo-column" style="gap: 0.25rem; flex: 1; min-width: 200px;">
+                <label style="font-size: 0.75rem; color: #5a6970;">이메일</label>
+                <DsInput v-model="formEmail" placeholder="이메일을 입력하세요" />
+              </div>
+              <div class="demo-column" style="gap: 0.25rem; flex: 1; min-width: 200px;">
+                <label style="font-size: 0.75rem; color: #5a6970;">부서</label>
+                <DsSelect
+                  v-model="formDept"
+                  :options="[
+                    { label: '개발팀', value: 'dev' },
+                    { label: '디자인팀', value: 'design' },
+                    { label: '기획팀', value: 'plan' },
+                  ]"
+                  placeholder="부서 선택"
+                />
+              </div>
+            </div>
+            <p style="font-size: 0.75rem; color: #5a6970;">
+              입력값 — 이름: {{ formName || '(없음)' }}, 이메일: {{ formEmail || '(없음)' }}, 부서: {{ formDept || '(없음)' }}
             </p>
           </div>
         </template>
-        <template #panel-details>
-          <div class="demo-column" style="gap: 0.5rem;">
-            <p style="font-size: 0.875rem; color: #2a3439; font-weight: 500;">상세 정보 탭 콘텐츠</p>
-            <p style="font-size: 0.875rem; color: #5a6970;">
-              프로젝트의 상세 설정과 구성 정보를 확인하고 수정할 수 있습니다.
-              각 항목을 클릭하면 더 자세한 정보를 볼 수 있습니다.
-            </p>
+        <template #panel-table>
+          <div style="padding: 1rem 0;">
+            <p style="font-size: 0.875rem; color: #2a3439; font-weight: 500; margin-bottom: 0.75rem;">사용자 목록</p>
+            <DsTable :data="tabTableData" :columns="tabTableColumns">
+              <template #cell-status="{ row }">
+                <DsStatusTag :status="row.status">
+                  {{ row.status === 'active' ? '활성' : row.status === 'pending' ? '대기' : '비활성' }}
+                </DsStatusTag>
+              </template>
+            </DsTable>
           </div>
         </template>
-        <template #panel-history>
-          <div class="demo-column" style="gap: 0.5rem;">
-            <p style="font-size: 0.875rem; color: #2a3439; font-weight: 500;">변경 이력 탭 콘텐츠</p>
-            <p style="font-size: 0.875rem; color: #5a6970;">
-              최근 30일간의 변경 이력을 확인할 수 있습니다.
-              날짜, 변경자, 변경 내용이 기록됩니다.
+        <template #panel-settings>
+          <div class="demo-column" style="gap: 1rem; padding: 1rem 0;">
+            <p style="font-size: 0.875rem; color: #2a3439; font-weight: 500;">알림 설정</p>
+            <DsCheckbox v-model="settingNotify" label="이메일 알림 수신" />
+            <div class="demo-column" style="gap: 0.25rem; max-width: 200px;">
+              <label style="font-size: 0.75rem; color: #5a6970;">테마</label>
+              <DsSelect
+                v-model="settingTheme"
+                :options="[
+                  { label: '라이트', value: 'light' },
+                  { label: '다크', value: 'dark' },
+                  { label: '시스템', value: 'system' },
+                ]"
+              />
+            </div>
+            <p style="font-size: 0.75rem; color: #5a6970;">
+              설정값 — 알림: {{ settingNotify ? 'ON' : 'OFF' }}, 테마: {{ settingTheme }}
             </p>
           </div>
         </template>
       </DsTabs>
+
+      <!-- 코드 예시 -->
+      <button class="demo-code-toggle" @click="showTabsCode = !showTabsCode">
+        {{ showTabsCode ? '코드 숨기기' : '코드 보기' }}
+      </button>
+      <div v-show="showTabsCode" class="demo-code">
+        <pre><code>&lt;!-- 탭 전환 시 데이터 유지: v-model로 바인딩된 데이터는 탭 간 공유됩니다 --&gt;
+&lt;script setup&gt;
+const activeTab = ref('form')
+const tabs = [
+  { key: 'form', label: '입력 폼' },
+  { key: 'table', label: '데이터 목록' },
+  { key: 'settings', label: '설정' },
+]
+const formName = ref('')
+const formEmail = ref('')
+&lt;/script&gt;
+
+&lt;DsTabs v-model="activeTab" :tabs="tabs"&gt;
+  &lt;template #panel-form&gt;
+    &lt;DsInput v-model="formName" placeholder="이름" /&gt;
+    &lt;DsInput v-model="formEmail" placeholder="이메일" /&gt;
+  &lt;/template&gt;
+  &lt;template #panel-table&gt;
+    &lt;DsTable :data="tableData" :columns="columns" /&gt;
+  &lt;/template&gt;
+  &lt;template #panel-settings&gt;
+    &lt;DsCheckbox v-model="notify" label="알림 수신" /&gt;
+  &lt;/template&gt;
+&lt;/DsTabs&gt;</code></pre>
+      </div>
     </section>
 
     <!-- DsMenuTab -->
@@ -220,7 +347,7 @@ const timelineItems = [
     <!-- DsCollapse -->
     <section class="demo-section">
       <h2 class="demo-section__title">DsCollapse</h2>
-      <p class="demo-section__subtitle">FAQ 형식으로 내용을 접고 펼칠 수 있습니다.</p>
+      <p class="demo-section__subtitle">FAQ 형식으로 내용을 접고 펼칠 수 있습니다. ▼/▲ 아이콘으로 열림/닫힘 상태를 표시합니다.</p>
       <div class="demo-column" style="gap: 0.5rem;">
         <DsCollapse v-model="faq1Open">
           <template #header>
@@ -255,6 +382,19 @@ const timelineItems = [
           </p>
         </DsCollapse>
       </div>
+
+      <!-- 코드 예시 -->
+      <button class="demo-code-toggle" @click="showCollapseCode = !showCollapseCode">
+        {{ showCollapseCode ? '코드 숨기기' : '코드 보기' }}
+      </button>
+      <div v-show="showCollapseCode" class="demo-code">
+        <pre><code>&lt;DsCollapse v-model="isOpen"&gt;
+  &lt;template #header&gt;
+    &lt;span&gt;질문 제목&lt;/span&gt;
+  &lt;/template&gt;
+  &lt;p&gt;답변 내용&lt;/p&gt;
+&lt;/DsCollapse&gt;</code></pre>
+      </div>
     </section>
 
     <!-- DsSteps -->
@@ -274,9 +414,36 @@ const timelineItems = [
     <!-- DsTimeline -->
     <section class="demo-section">
       <h2 class="demo-section__title">DsTimeline</h2>
-      <p class="demo-section__subtitle">주문 진행 이력을 타임라인 형식으로 표시합니다.</p>
-      <div style="max-width: 480px;">
-        <DsTimeline :items="timelineItems" />
+      <p class="demo-section__subtitle">다양한 상태(success, warning, error, info, 기본)를 타임라인으로 표현합니다.</p>
+      <div class="demo-row" style="gap: 3rem; flex-wrap: wrap; align-items: flex-start;">
+        <div style="flex: 1; min-width: 300px;">
+          <p style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem; color: #2a3439;">주문 배송 추적</p>
+          <DsTimeline :items="timelineItems" />
+        </div>
+        <div style="flex: 1; min-width: 300px;">
+          <p style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem; color: #2a3439;">서버 배포 이력</p>
+          <DsTimeline :items="timelineItems2" />
+        </div>
+      </div>
+
+      <!-- 코드 예시 -->
+      <button class="demo-code-toggle" @click="showTimelineCode = !showTimelineCode">
+        {{ showTimelineCode ? '코드 숨기기' : '코드 보기' }}
+      </button>
+      <div v-show="showTimelineCode" class="demo-code">
+        <pre><code>&lt;script setup&gt;
+const items = [
+  { title: '주문 접수', description: '정상 접수', time: '09:00', type: 'success' },
+  { title: '배송 준비', description: '준비 중', time: '14:30', type: 'warning' },
+  { title: 'DB 마이그레이션 실패', description: '오류 발생', time: '02:15', type: 'error' },
+  { title: '배송 중', description: '진행 중', time: '10:15', type: 'info' },
+  { title: '배송 완료', description: '예정', time: '', type: '' },
+]
+&lt;/script&gt;
+
+&lt;DsTimeline :items="items" /&gt;
+
+&lt;!-- type 옵션: 'success' | 'warning' | 'error' | 'info' | '' (기본) --&gt;</code></pre>
       </div>
     </section>
   </div>
@@ -320,5 +487,40 @@ const timelineItems = [
 .demo-grid {
   display: grid;
   gap: 1rem;
+}
+
+.demo-code-toggle {
+  margin-top: 1rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  color: #5a6970;
+  background: #f0f4f7;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.demo-code-toggle:hover {
+  background: #e4eaef;
+}
+
+.demo-code {
+  margin-top: 0.75rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+.demo-code pre {
+  margin: 0;
+  padding: 1rem;
+  background: #1e1e2e;
+  overflow-x: auto;
+}
+.demo-code code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #cdd6f4;
+  white-space: pre;
 }
 </style>

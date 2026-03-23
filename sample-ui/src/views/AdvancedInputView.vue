@@ -69,6 +69,8 @@ const transferData = [
 ]
 const selectedPerms = ref<(string | number)[]>(['perm-1', 'perm-5'])
 
+const showTransferCode = ref(false)
+
 const handleFileError = (payload: { file: File; reason: string }) => {
   const reasonMap: Record<string, string> = {
     accept: '허용되지 않는 파일 형식입니다',
@@ -206,7 +208,7 @@ const handleFileError = (payload: { file: File; reason: string }) => {
     <!-- DsTransfer -->
     <section class="demo-section">
       <h2 class="demo-section__title">DsTransfer</h2>
-      <p class="demo-section__subtitle">권한 목록에서 항목을 선택 패널로 이동합니다. 검색 가능합니다.</p>
+      <p class="demo-section__subtitle">권한 목록에서 항목을 선택 패널로 이동합니다. 검색창에 초성(예: "ㅅㅇㅈ" → 사용자)으로도 검색할 수 있습니다.</p>
       <DsTransfer
         v-model="selectedPerms"
         :data="transferData"
@@ -216,6 +218,31 @@ const handleFileError = (payload: { file: File; reason: string }) => {
       <p class="demo-value" style="margin-top: var(--ds-spacing-3, 0.75rem);">
         부여된 권한 ({{ selectedPerms.length }}개): {{ selectedPerms.join(', ') || '없음' }}
       </p>
+
+      <!-- 코드 예시 -->
+      <button class="demo-code-toggle" @click="showTransferCode = !showTransferCode">
+        {{ showTransferCode ? '코드 숨기기' : '코드 보기' }}
+      </button>
+      <div v-show="showTransferCode" class="demo-code">
+        <pre><code>&lt;script setup&gt;
+const transferData = [
+  { key: 'perm-1', label: '사용자 조회' },
+  { key: 'perm-2', label: '사용자 생성' },
+  { key: 'perm-3', label: '콘텐츠 조회' },
+  // ...
+]
+const selectedPerms = ref(['perm-1'])
+&lt;/script&gt;
+
+&lt;DsTransfer
+  v-model="selectedPerms"
+  :data="transferData"
+  :titles="['전체 권한', '부여된 권한']"
+  searchable
+/&gt;
+
+&lt;!-- 초성검색 기본 내장: "ㅅㅇㅈ" 입력 시 "사용자"가 포함된 항목 필터링 --&gt;</code></pre>
+      </div>
     </section>
   </div>
 </template>
@@ -253,5 +280,40 @@ const handleFileError = (payload: { file: File; reason: string }) => {
 .demo-value {
   font-size: 0.875rem;
   color: var(--ds-on-surface, #2a3439);
+}
+
+.demo-code-toggle {
+  margin-top: 1rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  color: #5a6970;
+  background: #f0f4f7;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.demo-code-toggle:hover {
+  background: #e4eaef;
+}
+
+.demo-code {
+  margin-top: 0.75rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+.demo-code pre {
+  margin: 0;
+  padding: 1rem;
+  background: #1e1e2e;
+  overflow-x: auto;
+}
+.demo-code code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #cdd6f4;
+  white-space: pre;
 }
 </style>
