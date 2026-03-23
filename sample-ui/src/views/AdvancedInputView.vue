@@ -224,7 +224,7 @@ const handleFileError = (payload: { file: File; reason: string }) => {
         {{ showTransferCode ? '코드 숨기기' : '코드 보기' }}
       </button>
       <div v-show="showTransferCode" class="demo-code">
-        <pre><code>&lt;script setup&gt;
+        <pre v-pre><code>&lt;script setup&gt;
 const transferData = [
   { key: 'perm-1', label: '사용자 조회' },
   { key: 'perm-2', label: '사용자 생성' },

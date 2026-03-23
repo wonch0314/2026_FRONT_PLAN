@@ -253,7 +253,7 @@ const showCollapseCode = ref(false)
         {{ showTabsCode ? '코드 숨기기' : '코드 보기' }}
       </button>
       <div v-show="showTabsCode" class="demo-code">
-        <pre><code>&lt;!-- 탭 전환 시 데이터 유지: v-model로 바인딩된 데이터는 탭 간 공유됩니다 --&gt;
+        <pre v-pre><code>&lt;!-- 탭 전환 시 데이터 유지: v-model로 바인딩된 데이터는 탭 간 공유됩니다 --&gt;
 &lt;script setup&gt;
 const activeTab = ref('form')
 const tabs = [
@@ -388,7 +388,7 @@ const formEmail = ref('')
         {{ showCollapseCode ? '코드 숨기기' : '코드 보기' }}
       </button>
       <div v-show="showCollapseCode" class="demo-code">
-        <pre><code>&lt;DsCollapse v-model="isOpen"&gt;
+        <pre v-pre><code>&lt;DsCollapse v-model="isOpen"&gt;
   &lt;template #header&gt;
     &lt;span&gt;질문 제목&lt;/span&gt;
   &lt;/template&gt;
@@ -431,7 +431,7 @@ const formEmail = ref('')
         {{ showTimelineCode ? '코드 숨기기' : '코드 보기' }}
       </button>
       <div v-show="showTimelineCode" class="demo-code">
-        <pre><code>&lt;script setup&gt;
+        <pre v-pre><code>&lt;script setup&gt;
 const items = [
   { title: '주문 접수', description: '정상 접수', time: '09:00', type: 'success' },
   { title: '배송 준비', description: '준비 중', time: '14:30', type: 'warning' },

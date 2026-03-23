@@ -164,7 +164,7 @@ const descItems3col = [
         {{ showTableCode ? '코드 숨기기' : '코드 보기' }}
       </button>
       <div v-show="showTableCode" class="demo-code">
-        <pre><code>&lt;script setup lang="ts"&gt;
+        <pre v-pre><code>&lt;script setup lang="ts"&gt;
 import { ref, computed, onMounted } from 'vue'
 import { DsTable, DsSpinner, DsStatusTag, DsButton } from 'dscore-ui-vue'
 
