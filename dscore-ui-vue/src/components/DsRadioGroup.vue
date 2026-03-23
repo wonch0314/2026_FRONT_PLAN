@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { provide } from 'vue'
+import { computed, provide } from 'vue'
 import DsRadio from './DsRadio.vue'
 import { useDsConfig } from '../plugin'
 
