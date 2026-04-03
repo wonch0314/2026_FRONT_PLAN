@@ -9,6 +9,7 @@ interface Props {
   disabled?: boolean
   allowDuplicate?: boolean
   applyDefaultStyle?: boolean
+  layout?: 'inline' | 'below'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,7 +18,8 @@ const props = withDefaults(defineProps<Props>(), {
   maxTags: Infinity,
   disabled: false,
   allowDuplicate: false,
-  applyDefaultStyle: undefined
+  applyDefaultStyle: undefined,
+  layout: 'inline'
 })
 
 const emit = defineEmits<{
@@ -86,37 +88,75 @@ const handleInput = (e: Event) => {
   <div
     :class="[
       isStyled && 'ds-tag-input',
-      isStyled && disabled && 'ds-tag-input--disabled'
+      isStyled && disabled && 'ds-tag-input--disabled',
+      isStyled && layout === 'below' && 'ds-tag-input--below'
     ]"
   >
-    <span
-      v-for="(tag, index) in modelValue"
-      :key="index"
-      :class="isStyled && 'ds-tag-input__tag'"
-    >
-      <span :class="isStyled && 'ds-tag-input__tag-label'">{{ tag }}</span>
-      <button
-        v-if="!disabled"
-        type="button"
-        :class="isStyled && 'ds-tag-input__tag-remove'"
-        @click="removeTag(tag, index)"
-        aria-label="태그 제거"
+    <!-- Inline mode: tags and input together -->
+    <template v-if="layout === 'inline'">
+      <span
+        v-for="(tag, index) in modelValue"
+        :key="index"
+        :class="isStyled && 'ds-tag-input__tag'"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10">
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
-    </span>
-    <input
-      v-if="!disabled || modelValue.length === 0"
-      :class="isStyled && 'ds-tag-input__input'"
-      :value="inputValue"
-      :placeholder="modelValue.length === 0 ? placeholder : ''"
-      :disabled="disabled || modelValue.length >= maxTags"
-      @input="handleInput"
-      @keydown="handleKeydown"
-    />
+        <span :class="isStyled && 'ds-tag-input__tag-label'">{{ tag }}</span>
+        <button
+          v-if="!disabled"
+          type="button"
+          :class="isStyled && 'ds-tag-input__tag-remove'"
+          @click="removeTag(tag, index)"
+          aria-label="태그 제거"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </span>
+      <input
+        v-if="!disabled || modelValue.length === 0"
+        :class="isStyled && 'ds-tag-input__input'"
+        :value="inputValue"
+        :placeholder="modelValue.length === 0 ? placeholder : ''"
+        :disabled="disabled || modelValue.length >= maxTags"
+        @input="handleInput"
+        @keydown="handleKeydown"
+      />
+    </template>
+
+    <!-- Below mode: input on top, tags below -->
+    <template v-else>
+      <input
+        v-if="!disabled || modelValue.length === 0"
+        :class="isStyled && 'ds-tag-input__input'"
+        :value="inputValue"
+        :placeholder="placeholder"
+        :disabled="disabled || modelValue.length >= maxTags"
+        @input="handleInput"
+        @keydown="handleKeydown"
+      />
+      <div v-if="modelValue.length > 0" :class="isStyled && 'ds-tag-input__tags-below'">
+        <span
+          v-for="(tag, index) in modelValue"
+          :key="index"
+          :class="isStyled && 'ds-tag-input__tag'"
+        >
+          <span :class="isStyled && 'ds-tag-input__tag-label'">{{ tag }}</span>
+          <button
+            v-if="!disabled"
+            type="button"
+            :class="isStyled && 'ds-tag-input__tag-remove'"
+            @click="removeTag(tag, index)"
+            aria-label="태그 제거"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </span>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -205,5 +245,24 @@ const handleInput = (e: Event) => {
 
   .ds-tag-input__input:disabled {
     cursor: not-allowed;
+  }
+
+  .ds-tag-input--below {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ds-tag-input--below .ds-tag-input__input {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .ds-tag-input__tags-below {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding-top: 0.375rem;
+    border-top: 1px solid var(--ds-border, rgba(0,0,0,0.06));
+    margin-top: 0.25rem;
   }
 </style>

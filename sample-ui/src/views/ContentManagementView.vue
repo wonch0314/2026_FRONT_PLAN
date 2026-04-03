@@ -288,15 +288,57 @@ const statusFlowItems = [
   { title: '게시 대기',           description: '예약 게시 설정됨 (2026-03-18 00:00)',             time: '',                type: '' },
 ]
 
-// ─── 배너 순서 편집 ───
+// ─── 배너 순서 편집 (Drag & Drop) ───
 const bannerItems = ref([
-  { id: 1, title: '봄 시즌 메인 배너',     position: 1 },
-  { id: 2, title: '신규 가입 프로모션',     position: 2 },
-  { id: 3, title: '아티스트 컴백 안내',     position: 3 },
-  { id: 4, title: '이벤트 응모 배너',       position: 4 },
-  { id: 5, title: '앱 다운로드 유도',       position: 5 },
+  { id: 1, title: '봄 시즌 메인 배너',     position: 1, gradient: 'linear-gradient(155deg, #5f5e5e, #535252)' },
+  { id: 2, title: '신규 가입 프로모션',     position: 2, gradient: 'linear-gradient(155deg, #3a5a7c, #2a4a6c)' },
+  { id: 3, title: '아티스트 컴백 안내',     position: 3, gradient: 'linear-gradient(155deg, #6b4c3b, #5a3b2a)' },
+  { id: 4, title: '이벤트 응모 배너',       position: 4, gradient: 'linear-gradient(155deg, #4a6b5c, #3a5b4c)' },
+  { id: 5, title: '앱 다운로드 유도',       position: 5, gradient: 'linear-gradient(155deg, #6b5a7c, #5a496b)' },
 ])
 
+const dragIndex = ref<number | null>(null)
+const dropTargetIndex = ref<number | null>(null)
+
+const onDragStart = (index: number, e: DragEvent) => {
+  dragIndex.value = index
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', String(index))
+  }
+}
+
+const onDragOver = (index: number, e: DragEvent) => {
+  e.preventDefault()
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
+  dropTargetIndex.value = index
+}
+
+const onDragLeave = () => {
+  dropTargetIndex.value = null
+}
+
+const onDrop = (index: number) => {
+  if (dragIndex.value === null || dragIndex.value === index) {
+    dragIndex.value = null
+    dropTargetIndex.value = null
+    return
+  }
+  const items = [...bannerItems.value]
+  const [moved] = items.splice(dragIndex.value, 1)
+  items.splice(index, 0, moved)
+  items.forEach((item, i) => { item.position = i + 1 })
+  bannerItems.value = items
+  dragIndex.value = null
+  dropTargetIndex.value = null
+}
+
+const onDragEnd = () => {
+  dragIndex.value = null
+  dropTargetIndex.value = null
+}
+
+// 버튼 이동 (접근성 폴백)
 const moveBanner = (index: number, direction: -1 | 1) => {
   const target = index + direction
   if (target < 0 || target >= bannerItems.value.length) return
@@ -479,6 +521,8 @@ const sortOptions = [
   { value: 'name', label: '이름순' },
 ]
 const currentSort = ref<string | number | null>('latest')
+const posterPage = ref(1)
+const posterPageSize = 4
 
 // 필터 + 검색 + 정렬 적용된 결과 데이터 (영화 포스터)
 interface MovieItem {
@@ -528,6 +572,16 @@ const filteredResults = computed(() => {
   else if (sort === 'name') results.sort((a, b) => a.title.localeCompare(b.title))
 
   return results
+})
+
+const paginatedResults = computed(() => {
+  const start = (posterPage.value - 1) * posterPageSize
+  return filteredResults.value.slice(start, start + posterPageSize)
+})
+
+// 필터/검색 변경 시 페이지 리셋
+watch([debouncedQuery, activeFilters, currentSort], () => {
+  posterPage.value = 1
 })
 
 // ─── 코드 보기 토글 ───
@@ -841,19 +895,37 @@ const statusFlowItems = [
       </div>
     </section>
 
-    <!-- ━━━ 배너 순서 편집 (BannerOrderEditor 패턴) ━━━ -->
+    <!-- ━━━ 배너 순서 편집 (Drag & Drop) ━━━ -->
     <section class="cm__section">
       <h2 class="cm__section-title">배너 순서 편집</h2>
-      <p class="cm__section-desc">DsSortableList 구현 전, 버튼 기반 순서 편집 프로토타입입니다. 실제 구현 시 드래그 앤 드롭으로 대체됩니다.</p>
+      <p class="cm__section-desc">드래그 앤 드롭으로 배너 순서를 조정합니다. 항목을 잡고 원하는 위치로 이동하세요. 키보드 접근성을 위해 ▲/▼ 버튼도 제공합니다.</p>
 
       <div class="cm__banner-list">
         <div
           v-for="(banner, index) in bannerItems"
           :key="banner.id"
           class="cm__banner-item"
+          :class="{
+            'cm__banner-item--dragging': dragIndex === index,
+            'cm__banner-item--drop-above': dropTargetIndex === index && dragIndex !== null && dragIndex > index,
+            'cm__banner-item--drop-below': dropTargetIndex === index && dragIndex !== null && dragIndex < index,
+          }"
+          draggable="true"
+          @dragstart="onDragStart(index, $event)"
+          @dragover="onDragOver(index, $event)"
+          @dragleave="onDragLeave"
+          @drop="onDrop(index)"
+          @dragend="onDragEnd"
         >
+          <div class="cm__banner-grip" title="드래그하여 이동">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+              <circle cx="3.5" cy="2" r="1.2"/><circle cx="8.5" cy="2" r="1.2"/>
+              <circle cx="3.5" cy="6" r="1.2"/><circle cx="8.5" cy="6" r="1.2"/>
+              <circle cx="3.5" cy="10" r="1.2"/><circle cx="8.5" cy="10" r="1.2"/>
+            </svg>
+          </div>
           <div class="cm__banner-pos">{{ banner.position }}</div>
-          <div class="cm__banner-thumb"></div>
+          <div class="cm__banner-thumb" :style="{ background: banner.gradient }"></div>
           <div class="cm__banner-info">
             <span class="cm__banner-title">{{ banner.title }}</span>
             <span class="cm__banner-id">ID: {{ banner.id }}</span>
@@ -880,12 +952,11 @@ const statusFlowItems = [
         {{ showBannerCode ? '코드 숨기기' : '코드 보기' }}
       </button>
       <div v-show="showBannerCode" class="cm__code">
-        <pre v-pre><code>&lt;!-- BannerOrderEditor 패턴 (프로토타입) --&gt;
+        <pre v-pre><code>&lt;!-- BannerOrderEditor 패턴 (Drag &amp; Drop) --&gt;
 &lt;script setup&gt;
 const bannerItems = ref([
   { id: 1, title: '봄 시즌 메인 배너', position: 1 },
   { id: 2, title: '신규 가입 프로모션', position: 2 },
-  // ...
 ])
 
 const moveBanner = (index: number, direction: -1 | 1) =&gt; {
@@ -1231,10 +1302,10 @@ const moveBanner = (index: number, direction: -1 | 1) =&gt; {
           <button class="cm__filter-empty-btn" @click="autoCompleteQuery = ''; debouncedQuery = ''; clearFilters()">필터 초기화</button>
         </div>
 
-        <!-- 결과 그리드 -->
+        <!-- 결과 그리드 (페이지당 4개) -->
         <div v-else class="cm__poster-grid">
           <div
-            v-for="item in filteredResults"
+            v-for="item in paginatedResults"
             :key="item.id"
             class="cm__poster-card"
           >
@@ -1255,6 +1326,11 @@ const moveBanner = (index: number, direction: -1 | 1) =&gt; {
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div v-if="filteredResults.length > posterPageSize" style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
+          <DsPagination v-model="posterPage" :total="filteredResults.length" :page-size="posterPageSize" />
         </div>
       </div>
 
@@ -1549,8 +1625,36 @@ const moveBanner = (index: number, direction: -1 | 1) =&gt; {
   padding: 0.875rem 1rem;
   background: #ffffff;
   border-bottom: 1px solid rgba(169, 180, 185, 0.12);
-  transition: background 150ms;
+  transition: background 150ms, opacity 150ms, transform 150ms;
+  cursor: grab;
+  user-select: none;
 }
+
+.cm__banner-item:active { cursor: grabbing; }
+
+.cm__banner-item--dragging {
+  opacity: 0.4;
+  background: #f0f4f7;
+}
+
+.cm__banner-item--drop-above {
+  box-shadow: inset 0 2px 0 0 #5f5e5e;
+}
+
+.cm__banner-item--drop-below {
+  box-shadow: inset 0 -2px 0 0 #5f5e5e;
+}
+
+.cm__banner-grip {
+  flex-shrink: 0;
+  color: #a9b4b9;
+  cursor: grab;
+  padding: 0.25rem;
+  transition: color 150ms;
+}
+
+.cm__banner-grip:hover { color: #5a6970; }
+.cm__banner-item:active .cm__banner-grip { cursor: grabbing; }
 
 .cm__banner-item:last-child {
   border-bottom: none;

@@ -30,6 +30,15 @@ const handleAsync = async () => {
   asyncResult.value = 'Done!'
 }
 
+// Async feedback demos
+const handleAsyncSuccess = async () => {
+  await new Promise(resolve => setTimeout(resolve, 1200))
+}
+
+const handleAsyncError = async () => {
+  await new Promise((_, reject) => setTimeout(() => reject(new Error('Simulated error')), 1200))
+}
+
 // --- DsInput ---
 const inputBasic = ref('')
 const inputDebounce = ref('')
@@ -127,15 +136,56 @@ const handleFormSubmit = (data: Record<string, any>) => {
     <div class="demo-section">
       <h2 class="demo-section__title">DsButton</h2>
       <p class="demo-section__subtitle">Variants, states, and async interaction.</p>
-      <div class="demo-row" style="flex-wrap: wrap; gap: 0.75rem;">
-        <DsButton>Primary</DsButton>
-        <DsButton class="ds-button--secondary">Secondary</DsButton>
-        <DsButton class="ds-button--tertiary">Tertiary</DsButton>
-        <DsButton :loading="true">Loading</DsButton>
-        <DsButton disabled>Disabled</DsButton>
-        <DsButton :loading="isLoading" @click="handleAsync">
-          {{ isLoading ? 'Processing…' : 'Async Click' }}
-        </DsButton>
+
+      <!-- Variant grid -->
+      <div class="demo-row" style="flex-wrap: wrap; gap: 1.5rem; align-items: flex-end;">
+        <div class="demo-column" style="gap: 0.4rem; align-items: flex-start;">
+          <DsButton>Primary</DsButton>
+          <span class="demo-btn-label">Primary</span>
+        </div>
+        <div class="demo-column" style="gap: 0.4rem; align-items: flex-start;">
+          <DsButton class="ds-button--secondary">Secondary</DsButton>
+          <span class="demo-btn-label">Secondary</span>
+        </div>
+        <div class="demo-column" style="gap: 0.4rem; align-items: flex-start;">
+          <DsButton class="ds-button--tertiary">Tertiary</DsButton>
+          <span class="demo-btn-label">Tertiary</span>
+        </div>
+        <div class="demo-column" style="gap: 0.4rem; align-items: flex-start;">
+          <DsButton class="ds-button--ghost">Ghost</DsButton>
+          <span class="demo-btn-label">Ghost</span>
+        </div>
+        <div class="demo-column" style="gap: 0.4rem; align-items: flex-start;">
+          <DsButton class="ds-button--destructive">Destructive</DsButton>
+          <span class="demo-btn-label">Destructive</span>
+        </div>
+        <div class="demo-column" style="gap: 0.4rem; align-items: flex-start;">
+          <DsButton :loading="true">Loading</DsButton>
+          <span class="demo-btn-label">Loading</span>
+        </div>
+        <div class="demo-column" style="gap: 0.4rem; align-items: flex-start;">
+          <DsButton disabled>Disabled</DsButton>
+          <span class="demo-btn-label">Disabled</span>
+        </div>
+      </div>
+
+      <!-- Async feedback row -->
+      <p class="demo-section__subtitle" style="margin-top: 1.5rem;">Async completion feedback — click to trigger.</p>
+      <div class="demo-row" style="flex-wrap: wrap; gap: 1.5rem; align-items: flex-end;">
+        <div class="demo-column" style="gap: 0.4rem; align-items: flex-start;">
+          <DsButton @click="handleAsyncSuccess">Save</DsButton>
+          <span class="demo-btn-label">Async success (holds green)</span>
+        </div>
+        <div class="demo-column" style="gap: 0.4rem; align-items: flex-start;">
+          <DsButton @click="handleAsyncError">Submit</DsButton>
+          <span class="demo-btn-label">Async error (red 2s, then idle)</span>
+        </div>
+        <div class="demo-column" style="gap: 0.4rem; align-items: flex-start;">
+          <DsButton :loading="isLoading" @click="handleAsync">
+            {{ isLoading ? 'Processing…' : 'Manual loading' }}
+          </DsButton>
+          <span class="demo-btn-label">Manual loading prop</span>
+        </div>
       </div>
       <div v-if="asyncResult" class="demo-value">Result: {{ asyncResult }}</div>
     </div>
@@ -177,7 +227,7 @@ const handleFormSubmit = (data: Record<string, any>) => {
       <div class="demo-grid" style="grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
         <div class="demo-column">
           <DsFormItem label="Basic">
-            <DsTextarea v-model="textareaBasic" placeholder="Enter text…" />
+            <DsTextarea v-model="textareaBasic" placeholder="Enter text…" :resize="true"/>
           </DsFormItem>
           <div class="demo-value">{{ textareaBasic.length }} chars</div>
         </div>

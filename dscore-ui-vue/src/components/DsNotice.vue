@@ -45,23 +45,23 @@ const getDefaultIcon = (type: string) => {
 </script>
 
 <template>
-  <Transition name="ds-alert">
+  <Transition name="ds-notice">
     <div
       v-if="visible"
-      :class="[isStyled && 'ds-alert', isStyled && `ds-alert--${type}`]"
+      :class="[isStyled && 'ds-notice', isStyled && `ds-notice--${type}`]"
       role="alert"
     >
-      <span v-if="showIcon" :class="isStyled && 'ds-alert-icon'">
+      <span v-if="showIcon" :class="isStyled && 'ds-notice-icon'">
         <component v-if="AlertIcon" :is="AlertIcon" />
         <span v-else v-html="getDefaultIcon(type)" />
       </span>
-      <div :class="isStyled && 'ds-alert-content'">
+      <div :class="isStyled && 'ds-notice-content'">
         <slot />
       </div>
       <button
         v-if="closable"
         type="button"
-        :class="isStyled && 'ds-alert-close'"
+        :class="isStyled && 'ds-notice-close'"
         @click="close"
         aria-label="Close"
       >
@@ -77,7 +77,7 @@ const getDefaultIcon = (type: string) => {
 
 <style>
 
-  .ds-alert {
+  .ds-notice {
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
@@ -90,28 +90,28 @@ const getDefaultIcon = (type: string) => {
     color: var(--ds-card-foreground, #1a1a1a);
   }
 
-  .ds-alert--info {
+  .ds-notice--info {
     background: var(--ds-info-container, #f0f6fa);
     color: var(--ds-info, #3d6b8a);
     border-color: rgba(61, 107, 138, 0.2);
   }
-  .ds-alert--success {
+  .ds-notice--success {
     background: var(--ds-success-container, #f0f7f2);
     color: var(--ds-success, #3d7a4a);
     border-color: rgba(61, 122, 74, 0.2);
   }
-  .ds-alert--warning {
+  .ds-notice--warning {
     background: var(--ds-warning-container, #fdf8ef);
     color: var(--ds-warning, #8a6d2b);
     border-color: rgba(138, 109, 43, 0.2);
   }
-  .ds-alert--error {
+  .ds-notice--error {
     background: var(--ds-error-container, #fdf2f2);
     color: var(--ds-destructive, #d4183d);
     border-color: rgba(212, 24, 61, 0.2);
   }
 
-  .ds-alert-icon {
+  .ds-notice-icon {
     flex-shrink: 0;
     width: 18px;
     height: 18px;
@@ -119,18 +119,18 @@ const getDefaultIcon = (type: string) => {
     opacity: 0.9;
   }
 
-  .ds-alert-icon svg {
+  .ds-notice-icon svg {
     width: 100%;
     height: 100%;
   }
 
-  .ds-alert-content {
+  .ds-notice-content {
     flex: 1;
     font-size: 0.875rem;
     line-height: 1.5;
   }
 
-  .ds-alert-close {
+  .ds-notice-close {
     flex-shrink: 0;
     background: none;
     border: none;
@@ -145,25 +145,25 @@ const getDefaultIcon = (type: string) => {
     transition: opacity 150ms cubic-bezier(0.4,0,0.2,1);
   }
 
-  .ds-alert-close:hover {
+  .ds-notice-close:hover {
     opacity: 0.85;
   }
 
-  .ds-alert-close svg {
+  .ds-notice-close svg {
     width: 14px;
     height: 14px;
   }
 
-  .ds-alert-enter-active,
-  .ds-alert-leave-active {
+  .ds-notice-enter-active,
+  .ds-notice-leave-active {
     transition: opacity 250ms cubic-bezier(0.4,0,0.2,1),
                 transform 250ms cubic-bezier(0.4,0,0.2,1),
                 max-height 250ms cubic-bezier(0.4,0,0.2,1);
     overflow: hidden;
   }
 
-  .ds-alert-enter-from,
-  .ds-alert-leave-to {
+  .ds-notice-enter-from,
+  .ds-notice-leave-to {
     opacity: 0;
     transform: translateY(-6px);
   }

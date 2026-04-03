@@ -12,12 +12,20 @@ interface Props {
   steps: StepItem[]
   direction?: 'horizontal' | 'vertical'
   applyDefaultStyle?: boolean
+  clickable?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   direction: 'horizontal',
-  applyDefaultStyle: undefined
+  applyDefaultStyle: undefined,
+  clickable: false
 })
+
+const emit = defineEmits<{
+  'update:current': [value: number]
+  'step-change': [payload: { from: number; to: number }]
+  'step-click': [index: number]
+}>()
 
 const config = useDsConfig()
 const isStyled = computed(() => props.applyDefaultStyle !== false && config.applyDefaultStyle !== false)
@@ -33,6 +41,40 @@ function getStatus(index: number): StepStatus {
 const stepStatuses = computed(() =>
   props.steps.map((_, i) => getStatus(i))
 )
+
+const canGoNext = computed(() => props.current < props.steps.length - 1)
+const canGoPrev = computed(() => props.current > 0)
+
+function next() {
+  if (!canGoNext.value) return false
+  const to = props.current + 1
+  emit('step-change', { from: props.current, to })
+  emit('update:current', to)
+  return true
+}
+
+function prev() {
+  if (!canGoPrev.value) return false
+  const to = props.current - 1
+  emit('step-change', { from: props.current, to })
+  emit('update:current', to)
+  return true
+}
+
+function goTo(index: number) {
+  if (index < 0 || index >= props.steps.length || index === props.current) return false
+  emit('step-change', { from: props.current, to: index })
+  emit('update:current', index)
+  return true
+}
+
+function handleStepClick(index: number) {
+  if (!props.clickable) return
+  emit('step-click', index)
+  goTo(index)
+}
+
+defineExpose({ next, prev, goTo, canGoNext, canGoPrev })
 </script>
 
 <template>
@@ -46,8 +88,10 @@ const stepStatuses = computed(() =>
       <div
         :class="[
           isStyled && 'ds-steps__item',
-          isStyled && ('ds-steps__item--' + stepStatuses[index])
+          isStyled && ('ds-steps__item--' + stepStatuses[index]),
+          isStyled && clickable && 'ds-steps__item--clickable'
         ]"
+        @click="handleStepClick(index)"
       >
         <div :class="isStyled && 'ds-steps__icon-wrapper'">
           <div :class="isStyled && 'ds-steps__icon'">
@@ -213,5 +257,13 @@ const stepStatuses = computed(() =>
     color: var(--ds-muted-foreground, #717182);
     margin-top: 0.25rem;
     line-height: 1.4;
+  }
+
+  .ds-steps__item--clickable {
+    cursor: pointer;
+  }
+
+  .ds-steps__item--clickable:hover .ds-steps__icon {
+    opacity: 0.8;
   }
 </style>

@@ -14,6 +14,7 @@ const navItems = [
   { label: 'Advanced Input', path: '/advanced-input' },
   { label: 'BO 데모', path: '/bo-demo' },
   { label: '콘텐츠 관리', path: '/content-management' },
+  { label: '영화 관리', path: '/movie-management' },
 ]
 
 const pageTitle = computed(() => {

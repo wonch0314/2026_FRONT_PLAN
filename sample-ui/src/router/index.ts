@@ -10,6 +10,7 @@ const routes = [
   { path: '/advanced-input', name: 'advanced-input', component: () => import('../views/AdvancedInputView.vue') },
   { path: '/bo-demo', name: 'bo-demo', component: () => import('../views/BoDemoView.vue') },
   { path: '/content-management', name: 'content-management', component: () => import('../views/ContentManagementView.vue') },
+  { path: '/movie-management', name: 'movie-management', component: () => import('../views/MovieManagementView.vue') },
 ]
 
 export default createRouter({

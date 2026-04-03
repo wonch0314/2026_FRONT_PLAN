@@ -1,3 +1,7 @@
 export { useUrlQuery } from './useUrlQuery'
 export type { UseUrlQueryOptions } from './useUrlQuery'
 export { usePermission, setupPermission, updatePermissions, vPermission, PermissionPlugin } from './usePermission'
+export { useDraftSave } from './useDraftSave'
+export type { UseDraftSaveOptions } from './useDraftSave'
+export { useInfiniteScroll } from './useInfiniteScroll'
+export type { UseInfiniteScrollOptions } from './useInfiniteScroll'

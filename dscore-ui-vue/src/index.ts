@@ -18,7 +18,7 @@ export { default as DsForm } from './components/DsForm.vue'
 // Components - Phase 3 Feedback
 export { default as DsToast } from './components/DsToast.vue'
 export { default as DsConfirm } from './components/DsConfirm.vue'
-export { default as DsAlert } from './components/DsAlert.vue'
+export { default as DsNotice } from './components/DsNotice.vue'
 export { default as DsProgress } from './components/DsProgress.vue'
 export { default as DsSkeleton } from './components/DsSkeleton.vue'
 
@@ -62,6 +62,7 @@ export { default as DsActionBar } from './components/DsActionBar.vue'
 // Components - Phase 9 New Common
 export { default as DsErrorFallback } from './components/DsErrorFallback.vue'
 export { default as DsFilterChip } from './components/DsFilterChip.vue'
+export { default as DsSortableList } from './components/DsSortableList.vue'
 
 // Plugin
 export { DsCore, useDsConfig } from './plugin'
@@ -73,3 +74,7 @@ export * from './types'
 export { useUrlQuery } from './composables'
 export type { UseUrlQueryOptions } from './composables'
 export { usePermission, setupPermission, updatePermissions, vPermission, PermissionPlugin } from './composables'
+export { useDraftSave } from './composables'
+export type { UseDraftSaveOptions } from './composables'
+export { useInfiniteScroll } from './composables'
+export type { UseInfiniteScrollOptions } from './composables'

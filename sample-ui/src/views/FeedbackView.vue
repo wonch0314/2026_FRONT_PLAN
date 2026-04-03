@@ -3,7 +3,7 @@ import { ref, reactive } from 'vue'
 import {
   DsToast,
   DsConfirm,
-  DsAlert,
+  DsNotice,
   DsProgress,
   DsSkeleton,
   DsErrorFallback,
@@ -45,7 +45,7 @@ const openTypedConfirm = async (type: 'info' | 'warning' | 'danger') => {
   confirmResults[type] = result ? 'Confirmed' : 'Cancelled'
 }
 
-// --- DsAlert ---
+// --- DsNotice ---
 const alertVisible = reactive({
   info: true,
   success: true,
@@ -170,23 +170,23 @@ const handleRetry = () => {
       </div>
     </div>
 
-    <!-- DsAlert -->
+    <!-- DsNotice -->
     <div class="demo-section">
-      <h2 class="demo-section__title">DsAlert</h2>
+      <h2 class="demo-section__title">DsNotice</h2>
       <p class="demo-section__subtitle">All four types with closable dismiss.</p>
       <div class="demo-column" style="gap: 0.75rem; max-width: 600px;">
-        <DsAlert v-if="alertVisible.info" type="info" :closable="true" @close="alertVisible.info = false">
+        <DsNotice v-if="alertVisible.info" type="info" :closable="true" @close="alertVisible.info = false">
           This is an informational message.
-        </DsAlert>
-        <DsAlert v-if="alertVisible.success" type="success" :closable="true" @close="alertVisible.success = false">
+        </DsNotice>
+        <DsNotice v-if="alertVisible.success" type="success" :closable="true" @close="alertVisible.success = false">
           Your changes have been saved successfully.
-        </DsAlert>
-        <DsAlert v-if="alertVisible.warning" type="warning" :closable="true" @close="alertVisible.warning = false">
+        </DsNotice>
+        <DsNotice v-if="alertVisible.warning" type="warning" :closable="true" @close="alertVisible.warning = false">
           Please review before continuing — some fields are incomplete.
-        </DsAlert>
-        <DsAlert v-if="alertVisible.error" type="error" :closable="true" @close="alertVisible.error = false">
+        </DsNotice>
+        <DsNotice v-if="alertVisible.error" type="error" :closable="true" @close="alertVisible.error = false">
           Failed to submit. Check your connection and try again.
-        </DsAlert>
+        </DsNotice>
         <div
           v-if="!alertVisible.info && !alertVisible.success && !alertVisible.warning && !alertVisible.error"
         >

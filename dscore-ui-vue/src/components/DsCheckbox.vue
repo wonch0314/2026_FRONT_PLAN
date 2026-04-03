@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useDsConfig } from '../plugin'
 
 interface Props {
-  modelValue?: boolean
+  modelValue?: boolean | (string | number)[]
   indeterminate?: boolean
   disabled?: boolean
   checkIcon?: object
@@ -19,19 +19,36 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
-  'change': [value: boolean]
+  'update:modelValue': [value: boolean | (string | number)[]]
+  'change': [value: boolean | (string | number)[]]
 }>()
 
 const config = useDsConfig()
 
 const isStyled = computed(() => props.applyDefaultStyle !== false && config.applyDefaultStyle !== false)
 
+const isArrayMode = computed(() => Array.isArray(props.modelValue))
+
 const isChecked = computed({
-  get: () => props.modelValue,
-  set: (value) => {
-    emit('update:modelValue', value)
-    emit('change', value)
+  get: () => {
+    if (isArrayMode.value) {
+      return (props.modelValue as (string | number)[]).includes(props.value as string | number)
+    }
+    return props.modelValue as boolean
+  },
+  set: (checked: boolean) => {
+    if (isArrayMode.value) {
+      const arr = props.modelValue as (string | number)[]
+      const val = props.value as string | number
+      const next = checked
+        ? [...arr, val]
+        : arr.filter(v => v !== val)
+      emit('update:modelValue', next)
+      emit('change', next)
+    } else {
+      emit('update:modelValue', checked)
+      emit('change', checked)
+    }
   }
 })
 

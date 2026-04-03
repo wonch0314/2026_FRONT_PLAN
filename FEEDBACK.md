@@ -525,19 +525,19 @@ Phase 3 (3~4주) — content-domain 조합
 
 ### 파일 변경 목록
 
-| 구분 | 파일 | 작업 |
-|------|------|------|
-| 보강 | `DsTable.vue` | 고정 컬럼 + 로딩 스피너 오버레이 |
-| 보강 | `DsFileUpload.vue` | 확장자 아이콘 + 이미지 미리보기 + 레이아웃 |
-| 보강 | `DsSkeleton.vue` | 프리셋 레이아웃 (table/card/form/list) |
-| 수정 | `DsDropdown.vue` | hover 색상 차별화 |
-| 수정 | `DsBreadcrumb.vue` | 비링크 cursor 수정 |
-| 신규 | `DsErrorFallback.vue` | API 에러 폴백 UI |
-| 신규 | `DsFilterChip.vue` | 필터 조건 칩 |
-| 신규 | `composables/useUrlQuery.ts` | URL 쿼리 동기화 |
-| 신규 | `composables/usePermission.ts` | 권한 기반 UI 제어 |
-| 신규 | `composables/index.ts` | 컴포저블 barrel export |
-| 수정 | `index.ts` | 신규 컴포넌트/컴포저블 export 추가 |
+| 구분 | 파일                           | 작업                                       |
+| ---- | ------------------------------ | ------------------------------------------ |
+| 보강 | `DsTable.vue`                  | 고정 컬럼 + 로딩 스피너 오버레이           |
+| 보강 | `DsFileUpload.vue`             | 확장자 아이콘 + 이미지 미리보기 + 레이아웃 |
+| 보강 | `DsSkeleton.vue`               | 프리셋 레이아웃 (table/card/form/list)     |
+| 수정 | `DsDropdown.vue`               | hover 색상 차별화                          |
+| 수정 | `DsBreadcrumb.vue`             | 비링크 cursor 수정                         |
+| 신규 | `DsErrorFallback.vue`          | API 에러 폴백 UI                           |
+| 신규 | `DsFilterChip.vue`             | 필터 조건 칩                               |
+| 신규 | `composables/useUrlQuery.ts`   | URL 쿼리 동기화                            |
+| 신규 | `composables/usePermission.ts` | 권한 기반 UI 제어                          |
+| 신규 | `composables/index.ts`         | 컴포저블 barrel export                     |
+| 수정 | `index.ts`                     | 신규 컴포넌트/컴포저블 export 추가         |
 
 ---
 
@@ -557,3 +557,384 @@ Phase 3 (3~4주) — content-domain 조합
 - TagInput: 하단 배치 모드
 - useDraftSave: 폼 임시저장 컴포저블
 - useInfiniteScroll: 무한 스크롤 컴포저블
+
+# Human (20260324 1632)
+
+- 다음으로 남은 Phase/작업들 진행해
+
+# AI
+
+## 완료된 작업 (Phase 2 — 공통 컴포넌트 보강 + 신규)
+
+### 기존 컴포넌트 보강
+
+#### DsDatePicker — 연도 이동 (<< >>)
+
+- 캘린더 헤더에 `<<` `>>` 버튼 추가 (이중 꺽쇠 SVG 아이콘)
+- `prevYear()`, `nextYear()` 함수 추가
+- 기존 `<` `>` 월 이동과 함께 배치: `<< < [2026년 3월] > >>`
+
+#### DsSteps — 스텝 이동 제어 API
+
+- `clickable` prop 추가 (true 시 스텝 클릭으로 이동 가능)
+- `next()`, `prev()`, `goTo(index)` 메서드 expose
+- `canGoNext`, `canGoPrev` computed 상태 expose
+- `update:current`, `step-change`, `step-click` 이벤트 emit
+- 부모에서 `ref`로 참조하여 프로그래밍 방식 스텝 제어 가능
+
+#### DsTagInput — 하단 배치 모드
+
+- `layout` prop 추가: `'inline'` (기본, 기존 동작) / `'below'` (입력창 아래 태그 표시)
+- below 모드: 입력창이 위, 태그 목록이 아래 분리 영역에 표시
+- 기존 inline 모드 완전 호환
+
+### 신규 공통 컴포넌트
+
+#### DsSortableList — 드래그 앤 드롭 순서 편집
+
+- HTML5 Drag and Drop API 기반 (외부 의존성 없음)
+- `modelValue` (v-model) 배열 양방향 바인딩
+- `direction`: `'vertical'` / `'horizontal'` 레이아웃
+- `handle` prop: true 시 핸들(⠿ 아이콘)로만 드래그 가능
+- `#item` 슬롯으로 커스텀 렌더링
+- `sort-end` 이벤트 emit (oldIndex, newIndex)
+- 드래그 중 시각적 피드백 (투명도 + 드롭 타겟 하이라이트)
+
+### 신규 공통 컴포저블
+
+#### useDraftSave — 폼 임시저장
+
+- localStorage/sessionStorage 기반 자동 저장
+- `key`로 저장소 구분, `debounce` 지원 (기본 1초)
+- `autoLoad`: 마운트 시 자동 복원 (기본 true)
+- `save()`, `load()`, `clear()` 메서드
+- `hasDraft`, `lastSaved` 반응형 상태 제공
+
+#### useInfiniteScroll — 무한 스크롤
+
+- IntersectionObserver 기반 (외부 의존성 없음)
+- sentinel 요소 감지 시 콜백 호출
+- `threshold`, `rootMargin` 커스텀 가능
+- `enabled` ref로 동적 활성화/비활성화
+- `isLoading` 상태 + `reset()` 메서드
+
+---
+
+### 파일 변경 목록
+
+| 구분 | 파일                               | 작업                                    |
+| ---- | ---------------------------------- | --------------------------------------- |
+| 보강 | `DsDatePicker.vue`                 | 연도 이동 << >> 버튼 추가               |
+| 보강 | `DsSteps.vue`                      | next/prev/goTo API + clickable + 이벤트 |
+| 보강 | `DsTagInput.vue`                   | layout prop (inline/below)              |
+| 신규 | `DsSortableList.vue`               | 드래그 앤 드롭 순서 편집                |
+| 신규 | `composables/useDraftSave.ts`      | 폼 임시저장                             |
+| 신규 | `composables/useInfiniteScroll.ts` | 무한 스크롤                             |
+| 수정 | `composables/index.ts`             | 신규 컴포저블 export 추가               |
+| 수정 | `index.ts`                         | DsSortableList + 컴포저블 export 추가   |
+
+---
+
+## 패키징 방향 결정
+
+- **dscore-ui-vue는 독립 패키지로 유지** (dscore-starter-vue 종속 없음)
+- Vue 3 외 외부 의존성 없음
+- starter가 필요하면 starter가 ui-vue를 감싸는 구조
+- `npm install dscore-ui-vue` 단독 사용 가능
+
+## 미완료 (다음 작업 후보)
+
+- DsImageCropper: Canvas API 기반 비율 크롭 (복잡도 높음, 별도 진행)
+- DsSearchBar: DsFilterChip 내장 연동
+- DatePicker: CSS 스타일링 가이드 문서, 프리셋/상대적 min-max
+- 패키징 작업: package.json, 빌드 설정, npm publish 준비
+
+# Human (0324 1704)
+
+각 컴포넌트 쓰면서 느낀점 정리할게
+
+## 버튼
+
+- 샘플 페이지에 이게 어떤 타입의 버튼인지 알 수 있는 설명이 있으면 좋겠어
+- Async Click은 완ㄹ료되면 초록색으로 변하고 초록색 체크 아이콘으로 바뀌었으면 좋겠어. (유저가 끝난걸 알 수 있게 클릭하기 전까지는 유지)
+  - 조금 별로일까?
+- button 클릭 중일 때. 스타일도 따로 됐으면 좋겠다,
+
+## Textarea
+
+- resize 옵션은?
+
+## DsCheckbox
+
+- (샘플페이지) MULTI-SELECT에서 에러 발생한다.
+
+## DsForm
+
+- (샘플페이지) Form인거 치고 입력시 validation이 안되는거 같고, 가이드도 충분하지 않은거 같다.
+
+## DsConfirm은
+
+- handleOnSave, handleOnCancel 를 지정할 수 있는거야?
+
+## Tooltip
+
+- 나오는 툴팁이 툴팁 버튼의 색과 같아 시인성이 떨어지고, 툴팁이 나온 상태에서 스크롤을 하면 사라지기 전까지 함께 움직임
+
+## popover
+
+- 팝오버 클릭하여 열면, 스크롤 이동시 해당 포인트에 고정되지 않고 화면을 따라옴
+
+## Datepicker
+
+- "2026년 3월" 클릭했을 때 26년 (1월 ~ 12월)로 버튼주고
+
+## File Uploader
+
+- 파일이 사전에 정해준 갯수를 넘게 첨부하면 스크롤로 확인할 수 있도록 구성
+
+## DS Tree Selector
+
+- 는 sample-ui에서 임시 데이터가 없어서 그런건지 빈값으로 나와
+
+## transfer
+
+- 너무 맘에 들고, 유지하되 드래그 앤 드랍 기능도 열어줘
+
+## DsToast DsAlert
+
+- 이 둘의 차이가 명확하지 않은거 같아
+
+## 공통
+
+- (샘플페이지) 옵션있고, 스타일 차이 있고 그런거 알겠어 근데 코드로 어떻게 구성되어있는건지 볼 수 있으면 좋겠다.
+
+# AI (0324 1704 응답)
+
+## 버튼
+
+**샘플 페이지에 버튼 타입 설명**
+
+- 각 버튼 옆에 라벨(Primary / Secondary / Tertiary / Danger 등) 추가하면 됩니다. 구현 가능.
+
+**Async Click 완료 시 초록색 + 체크 아이콘**
+
+- 좋은 아이디어입니다. 3단계 상태로 구현:
+  - idle → loading(스피너) → success(초록 + ✓, 다음 클릭 전까지 유지)
+  - `asyncStatus` 내부 상태: `'idle' | 'loading' | 'success' | 'error'`
+  - error 시 빨간색 + ✕ 표시도 가능
+- 별로이지 않습니다. Stripe, Vercel 등에서 자주 쓰는 패턴입니다.
+
+**버튼 클릭 중(active) 스타일**
+
+- 현재 `:active` 스타일이 `:hover`와 동일할 수 있습니다. `active` 상태에 약간 눌린 효과(scale 0.98 + 어두운 톤) 추가하겠습니다.
+
+---
+
+## Textarea
+
+**resize 옵션**
+
+- `resize` prop 추가: `'none' | 'vertical' | 'horizontal' | 'both'`
+- 현재 auto-height와 충돌할 수 있으므로: `autoResize: true`이면 resize 비활성화, `autoResize: false`이면 resize prop 적용
+- CSS `resize` 속성으로 간단히 구현 가능.
+
+---
+
+## DsCheckbox
+
+**샘플페이지 MULTI-SELECT 에러**
+
+- 확인 필요합니다. `v-model`에 배열 바인딩 시 value 타입 불일치 또는 초기값 문제일 수 있습니다. 코드를 확인하고 수정하겠습니다.
+
+---
+
+## DsForm
+
+**validation이 안 되고, 가이드 부족**
+
+- 현재 DsForm은 submit 시점에만 validation을 실행하는 구조일 수 있습니다. 개선 방향:
+  - **실시간 validation**: blur/input 시점에 개별 필드 검증
+  - **규칙 정의**: `rules` prop으로 `{ required: true, min: 3, pattern: /.../ }` 등
+  - **에러 메시지**: DsFormItem에 error 슬롯 또는 error prop으로 표시
+- 샘플 페이지에 validation 규칙 + 에러 메시지 표시 예시를 보강하겠습니다.
+
+---
+
+## DsConfirm
+
+**handleOnSave, handleOnCancel 지정**
+
+- 현재 DsConfirm은 Promise 기반입니다:
+  ```ts
+  const result = await confirmRef.value?.open();
+  if (result) {
+    /* 확인 */
+  } else {
+    /* 취소 */
+  }
+  ```
+- 콜백 방식도 지원하면 좋을 수 있습니다:
+  ```ts
+  confirmRef.value?.open({
+    onConfirm: () => handleSave(),
+    onCancel: () => handleCancel(),
+  });
+  ```
+- 두 방식 모두 지원하도록 개선 가능합니다.
+
+---
+
+## Tooltip
+
+**시인성 + 스크롤 시 따라옴**
+
+- **시인성**: 툴팁 배경을 `on_surface(#2a3439)` + 흰색 텍스트로 변경하여 트리거 버튼과 명확히 구분
+- **스크롤 추적**: 현재 `position: fixed` 또는 `absolute`로 위치 고정되어 있을 텐데, 스크롤 시 자동 닫힘 처리 필요. 또는 `teleport`로 body에 붙이고 `getBoundingClientRect()`로 실시간 위치 갱신.
+
+---
+
+## Popover
+
+**스크롤 시 고정되지 않고 따라옴**
+
+- Tooltip과 동일한 문제입니다. 해결 방향:
+  1. **스크롤 시 닫기** (간단, 대부분의 UI 라이브러리 기본 동작)
+  2. **스크롤 시 위치 재계산** (Floating UI 패턴 — `requestAnimationFrame`으로 위치 추적)
+- 옵션 1이 더 직관적이고 일반적입니다. `closeOnScroll` prop 추가 권장.
+
+---
+
+## DatePicker
+
+**"2026년 3월" 클릭 시 월 선택 뷰**
+
+- 헤더의 "2026년 3월" 텍스트를 클릭하면 1월~12월 버튼 그리드로 전환
+- 월 선택 후 다시 날짜 뷰로 복귀
+- `viewMode` 내부 상태: `'date' | 'month'` (추후 `'year'` 까지 확장 가능)
+- 구현 가능합니다.
+
+---
+
+## File Uploader
+
+**파일 갯수 초과 시 스크롤**
+
+- 파일 목록 영역에 `max-height` + `overflow-y: auto` 적용
+- `maxFiles` prop 초과 시 에러 메시지 표시 + 추가 업로드 비활성화
+- 또는 soft limit으로 목록은 스크롤 가능하되, hard limit에서 차단
+
+---
+
+## DsTreeSelect
+
+**샘플 데이터 없음**
+
+- 맞습니다. 샘플 페이지에 부서 트리/카테고리 트리 예시 데이터를 추가해야 합니다.
+
+---
+
+## DsTransfer
+
+**드래그 앤 드롭 기능 추가**
+
+- 현재 버튼(→ ←)으로만 이동 가능합니다. 개선:
+  - 좌→우, 우→좌 드래그 앤 드롭 이동 지원
+  - 드래그 중 대상 패널 하이라이트
+  - DsSortableList와 유사한 HTML5 DnD API 활용
+- 기존 버튼 방식은 접근성 폴백으로 유지
+
+---
+
+## DsToast vs DsAlert 차이 명확화
+
+| 구분     | DsToast                              | DsAlert                       |
+| -------- | ------------------------------------ | ----------------------------- |
+| 위치     | 화면 모서리 (고정, overlay)          | 페이지 콘텐츠 내 (인라인)     |
+| 수명     | 자동 소멸 (3~5초)                    | 사용자가 닫기 전까지 유지     |
+| 용도     | 일시적 피드백 (저장 완료, 삭제 성공) | 지속적 안내 (경고, 에러 상세) |
+| 인터랙션 | 무시 가능                            | 닫기 버튼 / 액션 버튼         |
+
+- 샘플 페이지에 이 차이를 명시하는 비교 섹션을 추가하겠습니다.
+
+---
+
+## 공통 — 코드 예시
+
+- 이미 일부 페이지(DataDisplay, Navigation)에 "코드 보기" 토글이 있습니다.
+- 아직 없는 페이지(Core, Form, Feedback, Overlay)에도 동일하게 추가하겠습니다.
+
+---
+
+## 요약 — 작업 목록
+
+| 우선순위 | 항목                                                | 난이도 |
+| -------- | --------------------------------------------------- | ------ |
+| 🔴 높음  | DsButton async 완료 상태 (초록 + ✓) + active 스타일 | 낮음   |
+| 🔴 높음  | Tooltip/Popover 스크롤 시 닫기/위치 재계산          | 중간   |
+| 🔴 높음  | DatePicker 월 선택 뷰 (헤더 클릭)                   | 중간   |
+| 🔴 높음  | DsForm 실시간 validation + 샘플 보강                | 중간   |
+| 🔴 높음  | DsCheckbox 멀티셀렉트 에러 수정                     | 낮음   |
+| 🟡 중간  | DsTextarea resize prop                              | 낮음   |
+| 🟡 중간  | DsFileUpload 스크롤 + maxFiles                      | 낮음   |
+| 🟡 중간  | DsTransfer 드래그 앤 드롭                           | 중간   |
+| 🟡 중간  | DsTreeSelect 샘플 데이터                            | 낮음   |
+| 🟡 중간  | DsConfirm 콜백 방식 지원                            | 낮음   |
+| 🟡 중간  | 나머지 샘플 페이지 코드 예시 추가                   | 낮음   |
+| 🟡 중간  | DsToast vs DsAlert 비교 섹션                        | 낮음   |
+| 🟢 낮음  | 버튼 타입 라벨 표시 (샘플)                          | 낮음   |
+
+어떤 것부터 진행할까요?
+
+# Human (0324 1746)
+
+- textarea 아냐 그냥 두자
+- fileuploader 최대 파일 개수, 크기 제한 등의 옵션도 줄 수. ㅣㅆ나?
+- DsAlert가 아니라 다른 이름으로 바꿔야겠는데 그러면
+
+# AI (0324 1746 응답)
+
+## Textarea
+
+- 확인, resize 건은 스킵합니다.
+
+## DsFileUpload — 최대 파일 개수/크기 제한
+
+이미 구현되어 있습니다:
+
+```vue
+<DsFileUpload
+  v-model="files"
+  accept="image/*,.pdf"
+  :max-size="5242880"
+  :max-files="3"
+  @error="handleError"
+/>
+```
+
+- `accept` — MIME 타입 또는 확장자로 파일 형식 제한
+- `maxSize` — 파일당 최대 크기 (바이트 단위, 기본 Infinity)
+- `maxFiles` — 최대 업로드 가능 파일 수 (기본 Infinity)
+- 초과 시 `@error` 이벤트 emit (`{ file, reason: 'maxFiles' | 'maxSize' | 'accept' }`)
+- UI에 "최대 5MB · 최대 3개" 안내 텍스트 자동 표시
+
+## DsAlert 이름 변경
+
+DsAlert와 DsToast의 역할 차이를 명확히 하기 위해 이름 변경 후보:
+
+| 현재    | 후보              | 설명                                            |
+| ------- | ----------------- | ----------------------------------------------- |
+| DsAlert | **DsNotice**      | "알림 안내" 느낌, 인라인 공지에 적합            |
+| DsAlert | **DsInlineAlert** | 명시적으로 인라인임을 표현                      |
+| DsAlert | **DsBanner**      | 페이지 상단/섹션 상단에 고정되는 안내 배너 느낌 |
+| DsAlert | **DsCallout**     | 기술 문서/블로그에서 자주 쓰는 용어, 강조 블록  |
+
+**추천: DsNotice** — 짧고, DsToast(일시적 알림)와 DsNotice(지속적 안내)로 역할이 명확히 구분됩니다.
+
+이름 확정해주시면 컴포넌트 + 샘플 + export 일괄 리네이밍하겠습니다.
+
+# Human (0324 1753)
+
+- DsNotice로 변경
+- 작업 시작
+
+# AI

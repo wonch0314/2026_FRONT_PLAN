@@ -135,6 +135,14 @@ function nextMonth() {
   }
 }
 
+function prevYear() {
+  viewYear.value--
+}
+
+function nextYear() {
+  viewYear.value++
+}
+
 function selectDay(cell: { y: number; m: number; d: number; current: boolean }) {
   if (isDisabledCell(cell)) return
   const val = cellStr(cell)
@@ -215,19 +223,35 @@ onUnmounted(() => {
       <div v-if="isOpen" :class="isStyled && 'ds-datepicker-calendar'">
         <!-- Header -->
         <div :class="isStyled && 'ds-datepicker-header'">
-          <button type="button" :class="isStyled && 'ds-datepicker-nav'" @click="prevMonth">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
+          <div :class="isStyled && 'ds-datepicker-nav-group'">
+            <button type="button" :class="isStyled && 'ds-datepicker-nav'" @click="prevYear" title="이전 년도">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="11 18 5 12 11 6" />
+                <polyline points="19 18 13 12 19 6" />
+              </svg>
+            </button>
+            <button type="button" :class="isStyled && 'ds-datepicker-nav'" @click="prevMonth" title="이전 월">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          </div>
           <span :class="isStyled && 'ds-datepicker-month-label'">
             {{ viewYear }}년 {{ MONTHS[viewMonth] }}
           </span>
-          <button type="button" :class="isStyled && 'ds-datepicker-nav'" @click="nextMonth">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
+          <div :class="isStyled && 'ds-datepicker-nav-group'">
+            <button type="button" :class="isStyled && 'ds-datepicker-nav'" @click="nextMonth" title="다음 월">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+            <button type="button" :class="isStyled && 'ds-datepicker-nav'" @click="nextYear" title="다음 년도">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="5 18 11 12 5 6" />
+                <polyline points="13 18 19 12 13 6" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <!-- Day headers -->
@@ -368,6 +392,12 @@ onUnmounted(() => {
   .ds-datepicker-nav svg {
     width: 15px;
     height: 15px;
+  }
+
+  .ds-datepicker-nav-group {
+    display: flex;
+    align-items: center;
+    gap: 0;
   }
 
   .ds-datepicker-grid {

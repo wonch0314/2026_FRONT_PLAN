@@ -130,7 +130,7 @@ export interface DsConfirmProps {
   icon?: Component
 }
 
-export interface DsAlertProps {
+export interface DsNoticeProps {
   type?: 'success' | 'error' | 'warning' | 'info'
   closable?: boolean
   icon?: Component
